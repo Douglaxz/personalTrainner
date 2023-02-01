@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">    
+  <link href="{{ url_for('static',filename='app.css') }}" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"> 
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <title>Password Manager</title>
+</head>
+<header>
+  <br>
+    <div class="pos-f-t">
+    <div class="collapse" id="navbarToggleExternalContent">
+      <div class="bg-dark p-4">
+        <button type="button" class="btn btn-outline-light btn-lg bi bi-house" onclick="window.location.href = '/'"> Home</button>
+        {% if(session['tipousuario_logado'] == 1)%}
+          <button type="button" class="btn btn-outline-light btn-lg bi bi-person" onclick="window.location.href = '/usuario'"> Usuários</button>
+          <button type="button" class="btn btn-outline-light btn-lg bi bi-people" onclick="window.location.href = '/tipousuario'"> Tipos Usuário</button>
+          <button type="button" class="btn btn-outline-light btn-lg bi-card-list" onclick="window.location.href = '/tiposenha'"> Tipos Senhas</button>
+        {% endif%}
+        <button type="button" class="btn btn-outline-light btn-lg bi bi-key" onclick="window.location.href = '/usuarioSenha'"> Senhas</button>
+        <button type="button" class="btn btn-outline-light btn-lg bi bi-briefcase" onclick="window.location.href = '/editarSenhaUsuario'"> Trocar Senha</button>
+        <button type="button" class="btn btn-outline-light btn-lg bi bi-box-arrow-right" onclick="window.location.href = '/logout'"> Logout</button>
+      </div>
+    </div>
+    <nav class="navbar navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Alterna navegação">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <font color="white" size="+1">
+        PasswordManager&nbsp;
+      </font>
+    </nav>
+  </div>
+</header>
+<body>
+  <div class="container" style="min-height: 620px"> 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      <br>
+      <div class="p-3 mb-1 bg-{{category}} text-white" role="alert">
+        {{ message }}
+      </div>   
+      {% endfor %}
+    
+    {% endif %}
+  {% endwith %}
+    {% block conteudo %} 
+    {% endblock%}
+  </div>
+</div>
+<footer class="bg-dark text-center text-white">
+  <!-- Grid container -->
+  <div class="container p-4 pb-0">
+    <!-- Section: Social media -->
+    <section class="mb-4">
+      <!-- Facebook -->
+      <a class="btn btn-outline-light btn-floating m-1" target="_blank" href="https://www.facebook.com/douglas.amaral2306" role="button"><i class="fa fa-facebook-official" data-toggle="tooltip" data-placement="right" title="Facebook"></i></a>
+
+      <!-- Instagram -->
+      <a class="btn btn-outline-light btn-floating m-1" target="_blank" href="https://www.instagram.com/douglaxz/" role="button"><i class="fa fa-instagram"></i></a>
+
+      <!-- Linkedin -->
+      <a class="btn btn-outline-light btn-floating m-1" target="_blank" href="https://www.linkedin.com/in/douglas-amaral-8a517227/" role="button"><i class="fa fa-linkedin"></i></a>
+
+      <!-- Github -->
+      <a class="btn btn-outline-light btn-floating m-1" target="_blank" href="https://github.com/Douglaxz" role="button"><i class="fa fa-github"></i></a>
+    </section>
+    <!-- Section: Social media -->
+  </div>
+  <!-- Grid container -->
+  <!-- Copyright -->
+  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+    Douglas Amaral
+  </div>
+  <!-- Copyright -->
+</footer>
+<script>
+  function myFunction() {
+      document.getElementById("formulario").submit();
+  }
+</script>  
+</body>
+</html>
