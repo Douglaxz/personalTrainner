@@ -1,6 +1,6 @@
- # Gerenciador de Senhas - PasswordManager
+ # Gerenciador de alunos - Personal Trainner
 
- ## :computer: Descrição do projeto: Gerenciador de Senhas - PasswordManager
+ ## :computer: Descrição do projeto: Gerenciador de alunos - personal trainner
  Este projeto visa contemplar a funcionalidade de um gerenciador de alunos para um personal trainner
 
 ## :video_camera: Amostra do projeto:
