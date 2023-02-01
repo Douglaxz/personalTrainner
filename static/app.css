@@ -32,14 +32,14 @@ footer, header, hgroup, menu, nav, section {
 
 body {
     padding-top: 10px;
-    background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
     font-family: 'Share Tech', sans-serif;
     line-height: 1;
     min-height: 100vh;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    height: 100%
+    height: 100%;
+    background-image: url('background1.jpg');
 }
 
 
@@ -1110,40 +1110,3 @@ footer {
 
     
 }
-
-.banner1 {
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .banner1 video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    object-fit: cover;
-    width: 100%;
-  }
-  .banner1 .content1 {
-    position: relative;
-    z-index: 1;
-    max-width: 1000px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .banner1 .content1 h1 {
-    margin: 0;
-    padding: 0;
-    font-size: 5.5em;
-    text-transform: uppercase;
-    color: #ffff;
-  }
-  .banner1 .content1 p {
-    font-size: 1.5em;
-    color: #ffff;
-  }
-  .banner1 .content1 img {
-    width: 40px;
-    height: 40px;
-  }

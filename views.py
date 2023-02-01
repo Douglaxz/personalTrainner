@@ -62,7 +62,7 @@ def autenticar():
             session['coduser_logado'] = usuario.cod_user
             flash(usuario.name_user + ' Usuário logado com sucesso','success')
             #return redirect('/')
-            return redirect('/usuarioSenha')
+            return redirect('/')
         else:
             flash('Verifique usuário e senha', 'danger')
             return redirect(url_for('login'))
