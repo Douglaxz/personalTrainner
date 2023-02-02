@@ -39,7 +39,7 @@ def logout():
  #rota para a tela de login
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('login1.html')
 
 # rota para autendicar a tela de login
 @app.route('/autenticar', methods = ['GET', 'POST'])
