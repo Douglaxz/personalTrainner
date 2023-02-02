@@ -374,7 +374,6 @@ q:before, q:after {
     text-align: center;   
     font-weight: bold;
     display: flex;
-    opacity: 0.8;
 }
 
 .boxtitulocombusca_responsivo {
@@ -408,7 +407,7 @@ footer {
 }
 
 header{
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 
@@ -529,8 +528,4 @@ header{
 
 .divlogin_responsivo{
     display: none;
-}
-
-.titulotabela{
-    opacity: 0.8;
 }
