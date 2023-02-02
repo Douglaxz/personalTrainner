@@ -58,3 +58,19 @@ class FormularioTipoUsuarioVisualizar(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')    
 
+#------------------------------------------------------------------------------------------------------------------------------
+#ACADEMIA
+#------------------------------------------------------------------------------------------------------------------------------
+#criação via wftorm do formulario de tipo usuarios
+class FormularioAcademiaEdicao(FlaskForm):
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite o nome da academia"})
+    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite o endereço da academia"})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    salvar = SubmitField('Salvar')    
+
+#criação via wftorm do formulario de tipo usuarios
+class FormularioAcademiaVisualizar(FlaskForm):
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')    

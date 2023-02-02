@@ -5,13 +5,18 @@ import time
 from datetime import date, timedelta
 from personal import app, db
 from models import tb_user,\
-    tb_usertype
+    tb_usertype,\
+    tb_academia,\
+    tb_aluno
 from helpers import \
     FormularPesquisa, \
+    FormularioUsuarioTrocarSenha,\
     FormularioUsuario, \
     FormularioUsuarioVisualizar, \
     FormularioTipoUsuarioEdicao,\
-    FormularioTipoUsuarioVisualizar
+    FormularioTipoUsuarioVisualizar,\
+    FormularioAcademiaEdicao,\
+    FormularioAcademiaVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -340,3 +345,105 @@ def atualizarTipoUsuario():
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarTipoUsuario', id=id))    
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ACADEMIA
+#---------------------------------------------------------------------------------------------------------------------------------
+
+# rota index para mostrar as academias cadastradas
+@app.route('/academia', methods=['POST','GET'])
+def academia():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('academia')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    if pesquisa == "" or pesquisa == None:     
+        academias = tb_academia.query.order_by(tb_academia.nome_academia)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        academias = tb_academia.query.order_by(tb_academia.nome_academia)\
+        .filter(tb_academia.nome_academia.ilike(f'%{pesquisa}%'))\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
+    return render_template('tipousuarios.html', titulo='Tipo Usuário', academias=academias, form=form)
+
+# rota para criar novo formulário usuário 
+@app.route('/novoAcademia')
+def novoAcademia():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoAcademia'))) 
+    form = FormularioAcademiaEdicao()
+    return render_template('novoAcademia.html', titulo='Nova Academia', form=form)
+
+# rota para criar tipo usuário no banco de dados
+@app.route('/criarAcademia', methods=['POST',])
+def criarAcademia():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarAcademia')))     
+    form = FormularioAcademiaEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarAcademia'))
+    nome  = form.nome.data
+    endereco  = form.endereco.data
+    status = form.status.data
+    academia = tb_academia.query.filter_by(nome_academia=nome).first()
+    if academia:
+        flash ('Academia já existe','danger')
+        return redirect(url_for('academia')) 
+    novoAcademia = tb_academia(nome_academia=nome, end_academia=endereco, status_usertype=status)
+    flash('Academia criado com sucesso!','success')
+    db.session.add(novoAcademia)
+    db.session.commit()
+    return redirect(url_for('academia'))
+
+# rota para visualizar tipo usuário 
+@app.route('/visualizarAcademia/<int:id>')
+def visualizarAcademia(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarAcademia')))  
+    academia = tb_academia.query.filter_by(cod_academia=id).first()
+    form = FormularioAcademiaVisualizar()
+    form.nome.data = academia.nome_academia
+    form.endereço = academia.end_academia
+    form.status.data = academia.status_academia
+    return render_template('visualizarAcademia.html', titulo='Visualizar Academia', id=id, form=form)   
+
+# rota para editar formulário tipo usuário 
+@app.route('/editarAcademia/<int:id>')
+def editarAcademia(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarAcademia')))  
+    academia = tb_usertype.query.filter_by(cod_usertype=id).first()
+    form = FormularioAcademiaEdicao()
+    form.nome.data = academia.nome_academia
+    form.endereco.data = academia.end_academia
+    form.status.data = academia.status_academia
+    return render_template('editarTipoUsuario.html', titulo='Editar Academia', id=id, form=form)   
+
+# rota para atualizar usuário no banco de dados
+@app.route('/atualizarAcademia', methods=['POST',])
+def atualizarAcademia():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarAcademia')))      
+    form = FormularioAcademiaEdicao(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        academia = tb_academia.query.filter_by(cod_academia=request.form['id']).first()
+        academia.nome_academia = form.nome.data
+        academia.end_academia = form.endereco.data
+        academia.status_academia = form.status.data
+        db.session.add(tipousuario)
+        db.session.commit()
+        flash('Academia atualizada com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarTipoUsuario', id=id))  
