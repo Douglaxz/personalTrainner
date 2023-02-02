@@ -374,6 +374,7 @@ q:before, q:after {
     text-align: center;   
     font-weight: bold;
     display: flex;
+    opacity: 0.8;
 }
 
 .boxtitulocombusca_responsivo {
@@ -407,7 +408,7 @@ footer {
 }
 
 header{
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 
@@ -439,6 +440,7 @@ header{
         font-size: 18px;      
         color: #FFF;
         width: 95vw;
+        opacity: 0.8;
     }
 
     .boxcentral {
@@ -450,21 +452,11 @@ header{
         width: 95vw;
     }
 
-    body {
-        width: 95%;
-        height: 95%;
-        font-family: 'Share Tech', sans-serif;
-        max-height: 90vh;
-        background-repeat: no-repeat;
-        background-image: none;
-        border: 5px solid red;
-        margin-left: 60px;
-    }
 
     .divlogin {
         justify-content: center;
         text-align: center;  
-        opacity: 0.1;
+        opacity: 0.;
         border: 1px solid black;
         height: 100vh;
         width: 30%;
@@ -476,11 +468,34 @@ header{
         margin-left: 0;
     }
 
+    .menu{
+        display: none;
+    }
 
+    body{
+        width: 95vw;
+    }
+
+    footer {
+        width: 100%;
+        height: 12vh;
+        bottom:0;
+        background-color: #081624;
+        opacity: 0.6;
+        text-align: right;
+    }    
+
+    .menu_responsivo {
+        display: block;
+    }
 
   }
 
 /*tela de login*/
+
+.menu_responsivo {
+    display: none;
+}
 
 .divlogin {
     height: 55vh;
@@ -514,4 +529,8 @@ header{
 
 .divlogin_responsivo{
     display: none;
+}
+
+.titulotabela{
+    opacity: 0.8;
 }

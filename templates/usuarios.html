@@ -24,7 +24,7 @@
 <!-- mostrar dados -->
 <div class="boxcentral bg-light p-2 text-dark bg-opacity-50">
   <table class="table table-striped table-responsiv">
-      <thead class="bg-dark text-white">
+      <thead class="bg-dark text-white titulotabela">
         <tr>
           <th class="text-left col-md-8">Usuário</th>
           <th class="text-left col-md-2">Status</th>
@@ -43,7 +43,7 @@
                 {% endif %}                       
               </td>
               <td align="center">
-                <a class="btn btn-primary" href="{{url_for('visualizarUsuario',id=usuario.cod_user)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:white;"></i></a>
+                <a class="btn" href="{{url_for('visualizarUsuario',id=usuario.cod_user)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
             </td>              
           </tr>
           {% endfor %}
