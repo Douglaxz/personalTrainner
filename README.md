@@ -16,7 +16,6 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] SQLAlchemy
 - [X] Mysql
 - [X] Flask Bcrypt  - pip install flask-bcript
-- [X] Werkzeug - pip install Werkzeug
 
 ## :hammer_and_wrench: Construído com:
 - VsCode
@@ -41,6 +40,7 @@ Para começar, verifique a instalação dos seguintes itens:
 - [ ] Funcionalidade Alunos
 - [ ] Funcionalidade Academias
 - [ ] Funcionalidade Plano de treinamentos
+- [ ] Agendamento de aulas
 
 
 ## :paperclips: Colaborando:
