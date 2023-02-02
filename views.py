@@ -5,21 +5,13 @@ import time
 from datetime import date, timedelta
 from personal import app, db
 from models import tb_user,\
-    tb_usertype,\
-    tb_passwordtype,\
-    tb_userpassword
+    tb_usertype
 from helpers import \
     FormularPesquisa, \
     FormularioUsuario, \
     FormularioUsuarioVisualizar, \
     FormularioTipoUsuarioEdicao,\
-    FormularioTipoUsuarioVisualizar,\
-    FormularioTipoSenhaEdicao,\
-    FormularioTipoSenhaVisualizar,\
-    FormularioUsuarioSenhaEdicao,\
-    FormularioUsuarioSenhaVisualizar,\
-    FormularioUsuarioTrocarSenha,\
-    FormularioSenhaEdicao
+    FormularioTipoUsuarioVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
