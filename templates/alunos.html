@@ -1,0 +1,88 @@
+{% extends "template.html"%}
+{% block conteudo %}
+<br>
+<form method="post" action="{{ url_for('academia') }}" enctype="multipart/form-data" id="formulario">
+<!-- barra de navegação para desktop/notebook -->
+  <div class="boxtitulocombusca bg-dark align-items-center">
+    <div class="p-2 bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-universal-access" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
+    <div class="container w-25 input-group">{{form.pesquisa(class="form-control")}}</div>    
+    <div class="p-2"><a class="btn btn-warning" href="#" onclick="myFunction()"><i class="bi bi-search" style="font-size:1.5rem; color:white;"></i></a></div>
+    <div class="p-2"><a class="btn btn-danger" href="{{url_for('aluno')}}"><i class="bi bi-eraser" style="font-size:1.5rem; color:white;"></i></a></div>
+    <div class="p-2"><a class="btn btn-success" href="{{url_for('novoAluno')}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
+  </div>
+<!-- final -->
+<!-- barra de navegação para mobile -->
+  <div class="bg-dark align-items-center boxtitulocombusca_responsivo">    
+    <div class="p-2 bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-universal-access" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
+    <div class="container input-group">{{form.pesquisa_responsiva(class="form-control")}}</div>
+    <div class="p-2 align-items-center"><a class="btn btn-warning" href="#" onclick="myFunction()"><i class="bi bi-search" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn-danger" href="{{url_for('aluno')}}"><i class="bi bi-eraser" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn-success" href="{{url_for('novoAluno')}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
+  </div>
+<!-- final -->
+</form>
+<!-- mostrar dados -->
+<div class="boxcentral bg-light p-2 text-dark">
+  <table class="table table-striped table-responsiv">
+      <thead class="bg-dark text-white">
+          <tr>
+              <th class="text-left col-md-8">Nome</th>
+              <th class="text-left col-md-2">Status</th>
+              <th class="text-left col-md-2">Ações</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for aluno in alunos.items %}
+          <tr>
+              <td class="text-left">{{ aluno.nome_aluno }}</td>
+              <td class="text-left">
+                {% if aluno.status_aluno == 0: %}
+                <i class="bi bi-toggle-on text-success" style="font-size:2rem; color:white;">
+                {% else %}
+                <i class="bi bi-toggle-off text-danger" style="font-size:2rem; color:white;">
+                {% endif %}                       
+              <td>
+                <a class="btn" href="{{url_for('visualizarAluno',id=aluno.cod_academia)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
+            </td>              
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+<!-- navegação entre as páginas -->
+<div class="boxcentral bg-light p-2 text-dark bg-opacity-50">
+  <!-- paginação links-->
+  <div class="text-right">
+    <a href="{{ url_for('aluno', page=alunos.prev_num) }}"
+      class="btn btn-outline-dark 
+      {% if alunos.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
+  <!-- Loop through the number of pages to display a link for each-->
+    {% for page_num in alunos.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+  {% if page_num %}
+  <!-- Check for the active page and set the link to "Active"-->
+            {% if alunos.page == page_num %}
+            <a href="{{ url_for('aluno', page=page_num) }}"
+              class="btn btn-dark">
+                {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('aluno', page=page_num) }}"
+              class="btn btn-outline-dark">
+                {{ page_num }}
+            </a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+    <a href="{{ url_for('aluno', page=alunos.next_num) }}"
+      class="btn btn-outline-dark 
+      {% if alunos.page == alunos.pages %}disabled{% endif %}">
+        &raquo;
+    </a>
+  </div>
+  <p class="text-right mt-3">Mostrando página {{ alunos.page }} de {{ alunos.pages }}</p>
+</div>
+{% endblock%}

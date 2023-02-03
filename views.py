@@ -571,10 +571,12 @@ def aluno():
         pesquisa = form.pesquisa_responsiva.data
     if pesquisa == "" or pesquisa == None:     
         alunos = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+        .filter(tb_aluno.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
         alunos = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
         .filter(tb_aluno.nome_aluno.ilike(f'%{pesquisa}%'))\
+        .filter(tb_aluno.cod_user == session['usuario_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
     return render_template('alunos.html', titulo='Alunos', alunos=alunos, form=form)
 
@@ -607,12 +609,17 @@ def criarAluno():
         return redirect(url_for('criarAluno'))
     nome  = form.nome.data
     endereco  = form.endereco.data
+    telefone  = form.telefone.data
+    datanascimento  = form.datanascimento.data
+    observacoes  = form.observacoes.data
+    academia = form.academia.data
     status = form.status.data
-    aluno = tb_academia.query.filter_by(nome_aluno=nome).first()
+    usuario = session['coduser_logado']
+    aluno = tb_aluno.query.filter_by(nome_aluno=nome).first()
     if aluno:
         flash ('Aluno já existe','danger')
         return redirect(url_for('aluno')) 
-    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status)
+    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone)
     flash('Aluno criado com sucesso!','success')
     db.session.add(novoAluno)
     db.session.commit()

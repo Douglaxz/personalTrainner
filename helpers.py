@@ -3,7 +3,7 @@ import os
 from personal import app, db
 from models import tb_user, tb_usertype, tb_academia, tb_aluno
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField
+from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField
 
 ##################################################################################################################################
 #PESQUISA
@@ -122,12 +122,12 @@ class FormularioAcademiaVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAlunoEdicao(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o nome do aluno"})
-    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o endereço do aluno"})
+    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={"placeholder": "digite o endereço do aluno"})
     datanascimento = DateField('Data de Nascimento:', [validators.DataRequired()],render_kw={"placeholder": "digite a data de nascimento do aluno"})
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")])
-    observacoes = StringField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)],render_kw={"placeholder": "digite as observações do aluno"})    
+    observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)],render_kw={"placeholder": "digite as observações do aluno"})    
     academia = SelectField('Academia:', coerce=int,  choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')])
-    email = EmailField('Email:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o email do usuário"})
+    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o telefone do usuário"})
     salvar = SubmitField('Salvar')
 
 
@@ -138,10 +138,10 @@ class FormularioAlunoEdicao(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAlunoVisualizar(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
-    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    endereco = StringField('Endereço:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     datanascimento = StringField('Data de Nascimento:', [validators.DataRequired()],render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")], render_kw={'readonly': True})
-    observacoes = StringField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={'readonly': True})
+    observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={'readonly': True})
     academia = SelectField('Academia:', coerce=int, choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')], render_kw={'readonly': True})
-    email = EmailField('Email:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     salvar = SubmitField('Editar')

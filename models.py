@@ -27,7 +27,7 @@ class tb_aluno(db.Model):
     datanasc_aluno = db.Column(db.DateTime, nullable=False)
     status_aluno = db.Column(db.Integer, nullable=False)
     cod_user = db.Column(db.Integer, nullable=False)
-    cod_user = db.Column(db.Integer, nullable=False)
+    cod_academia = db.Column(db.Integer, nullable=False)
     obs_aluno = db.Column(db.String(200), nullable=False)
     telefone_aluno = db.Column(db.String(50), nullable=False)   
 
