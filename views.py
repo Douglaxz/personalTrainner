@@ -448,7 +448,7 @@ def academia():
         academias = tb_academia.query.order_by(tb_academia.nome_academia)\
         .filter(tb_academia.nome_academia.ilike(f'%{pesquisa}%'))\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
-    return render_template('tipousuarios.html', titulo='Tipo Usuário', academias=academias, form=form)
+    return render_template('academias.html', titulo='Academias', academias=academias, form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: novoAcademia
@@ -484,7 +484,7 @@ def criarAcademia():
     if academia:
         flash ('Academia já existe','danger')
         return redirect(url_for('academia')) 
-    novoAcademia = tb_academia(nome_academia=nome, end_academia=endereco, status_usertype=status)
+    novoAcademia = tb_academia(nome_academia=nome, end_academia=endereco, status_academia=status)
     flash('Academia criado com sucesso!','success')
     db.session.add(novoAcademia)
     db.session.commit()
@@ -503,7 +503,7 @@ def visualizarAcademia(id):
     academia = tb_academia.query.filter_by(cod_academia=id).first()
     form = FormularioAcademiaVisualizar()
     form.nome.data = academia.nome_academia
-    form.endereço = academia.end_academia
+    form.endereco.data = academia.end_academia
     form.status.data = academia.status_academia
     return render_template('visualizarAcademia.html', titulo='Visualizar Academia', id=id, form=form)   
 
@@ -517,12 +517,12 @@ def editarAcademia(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('editarAcademia')))  
-    academia = tb_usertype.query.filter_by(cod_usertype=id).first()
+    academia = tb_academia.query.filter_by(cod_academia=id).first()
     form = FormularioAcademiaEdicao()
     form.nome.data = academia.nome_academia
     form.endereco.data = academia.end_academia
     form.status.data = academia.status_academia
-    return render_template('editarTipoUsuario.html', titulo='Editar Academia', id=id, form=form)   
+    return render_template('editarAcademia.html', titulo='Editar Academia', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: atualizarAcademia
@@ -541,9 +541,9 @@ def atualizarAcademia():
         academia.nome_academia = form.nome.data
         academia.end_academia = form.endereco.data
         academia.status_academia = form.status.data
-        db.session.add(tipousuario)
+        db.session.add(academia)
         db.session.commit()
         flash('Academia atualizada com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarTipoUsuario', id=id))  
+    return redirect(url_for('visualizarAcademia', id=id))  

@@ -1,13 +1,13 @@
 {% extends "template.html"%}
 {% block conteudo %}
-<form method="post" action="{{ url_for('atualizarTipoUsuario') }}" enctype="multipart/form-data" id="formulario">
+<form method="post" action="{{ url_for('atualizarAcademia') }}" enctype="multipart/form-data" id="formulario">
 <br>
   <!-- Padrão para desktop/notebook -->
   <div class="boxtitulo bg-dark justify-content-between">
     <div class="bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-people" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
     <div class="col-md-4 offset-md-4" style="text-align: right;">
     <a class="btn btn-primary" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a>
-    <a class="btn btn-danger" href="{{url_for('visualizarTipoUsuario',id=id)}}"><i class="bi bi-arrow-counterclockwise" style="font-size:1.5rem; color:white;"></i></a>  
+    <a class="btn btn-danger" href="{{url_for('visualizarAcademia',id=id)}}"><i class="bi bi-arrow-counterclockwise" style="font-size:1.5rem; color:white;"></i></a>  
   </div>
 </div>  
   <!-- Padrão para mobile -->
@@ -15,7 +15,7 @@
   <div class="bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-people" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
   <div class="col-md-4 offset-md-4" style="text-align: center;">
     <a class="btn btn-primary" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a>
-    <a class="btn btn-danger" href="{{url_for('visualizarTipoUsuario',id=id)}}"><i class="bi bi-arrow-counterclockwise" style="font-size:1.5rem; color:white;"></i></a>   
+    <a class="btn btn-danger" href="{{url_for('visualizarAcademia',id=id)}}"><i class="bi bi-arrow-counterclockwise" style="font-size:1.5rem; color:white;"></i></a>   
   </div>
 </div>
 <!-- conteudo -->
@@ -24,8 +24,12 @@
     <input type="hidden" name="id" id="id" value="{{id}}">
     {{form.csrf_token()}}
     <div class="form-group">
-      {{form.descricao.label(class="form-label")}}
-      {{form.descricao(class="form-control")}}
+      {{form.nome.label(class="form-label")}}
+      {{form.nome(class="form-control")}}
+    </div>
+    <div class="form-group">
+      {{form.endereco.label(class="form-label")}}
+      {{form.endereco(class="form-control")}}
     </div>
     <div class="form-group">
       {{form.status.label(class="form-label")}}
