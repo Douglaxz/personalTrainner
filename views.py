@@ -25,28 +25,46 @@ import string
 import random
 import numbers
 
+##################################################################################################################################
+#GERAL
+##################################################################################################################################
 
-
-# rota index
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: index
+#FUNÇÃO: redirecionar para página principal
+#PODE ACESSAR: todos os usuários
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/')
 def index():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return redirect(url_for('login'))        
     return render_template('index.html', titulo='Bem vindos')
 
-# rota logout
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: logout
+#FUNÇÃO: remover dados de sessão e deslogar ususários
+#PODE ACESSAR: todos os usuários
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/logout', methods = ['GET', 'POST'])
 def logout():
     session['usuario_logado'] = None
     flash('Logout efetuado com sucesso','success')
     return redirect(url_for('login'))
 
- #rota para a tela de login
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: login
+#FUNÇÃO: direcionar para formulário de login
+#PODE ACESSAR: todos os usuários
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/login')
 def login():
     return render_template('login1.html')
 
-# rota para autendicar a tela de login
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: autenticar
+#FUNÇÃO: autenticar usuário
+#PODE ACESSAR: todos os usuários
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/autenticar', methods = ['GET', 'POST'])
 def autenticar():
     usuario = tb_user.query.filter_by(login_user=request.form['usuario']).first()
@@ -67,11 +85,15 @@ def autenticar():
         flash('Usuário não logado com sucesso','success')
         return redirect(url_for('login'))
 
-#---------------------------------------------------------------------------------------------------------------------------------
+##################################################################################################################################
 #USUARIOS
-#---------------------------------------------------------------------------------------------------------------------------------
+##################################################################################################################################
 
-# rota index para mostrar os usuários
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: usuario
+#FUNÇÃO: tela do sistema para mostrar os usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/usuario', methods=['POST','GET'])
 def usuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -100,7 +122,11 @@ def usuario():
 
     return render_template('usuarios.html', titulo='Usuários', usuarios=usuarios, form=form)
 
-# rota para criar novo formulário usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoUsuario
+#FUNÇÃO: mostrar o formulário de cadastro de usuário
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/novoUsuario')
 def novoUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -109,37 +135,11 @@ def novoUsuario():
     form = FormularioUsuario()
     return render_template('novoUsuario.html', titulo='Novo Usuário', form=form)
 
-# rota para visualizar usuário 
-@app.route('/visualizarUsuario/<int:id>')
-def visualizarUsuario(id):
-    if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('visualizarUsuario')))    
-    usuario = tb_user.query.filter_by(cod_user=id).first()
-    form = FormularioUsuarioVisualizar()
-    form.nome.data = usuario.name_user
-    form.status.data = usuario.status_user
-    form.login.data = usuario.login_user
-    form.tipousuario.data = usuario.cod_usertype
-    form.email.data = usuario.email_user
-    return render_template('visualizarUsuario.html', titulo='Visualizar Usuário', id=id, form=form)   
-
-# rota para editar formulário usuário 
-@app.route('/editarUsuario/<int:id>')
-def editarUsuario(id):
-    if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('editarUsuario/<int:id>')))  
-    usuario = tb_user.query.filter_by(cod_user=id).first()
-    form = FormularioUsuario()
-    form.nome.data = usuario.name_user
-    form.status.data = usuario.status_user
-    form.login.data = usuario.login_user
-    form.tipousuario.data = usuario.cod_usertype
-    form.email.data = usuario.email_user
-    return render_template('editarUsuario.html', titulo='Editar Usuário', id=id, form=form)    
-       
-# rota para criar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarUsuario
+#FUNÇÃO: inserir informações do usuário no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarUsuario', methods=['POST',])
 def criarUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -165,7 +165,11 @@ def criarUsuario():
     flash('Usuário criado com sucesso','success')
     return redirect(url_for('usuario'))
 
-# rota para criar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarUsuarioexterno - NÃO DISPONIVEL NESTA VERSAL
+#FUNÇÃO: inserir informações do usuário no banco de dados realizam cadastro pela área externa
+#PODE ACESSAR: novos usuários
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/criarUsuarioexterno', methods=['POST',])
 def criarUsuarioexterno():    
     nome  = request.form['nome']
@@ -174,10 +178,8 @@ def criarUsuarioexterno():
     localarroba = email.find("@")
     login = email[0:localarroba]
     tipousuario = 2
-    
     #criptografar senha
     senha = generate_password_hash(request.form['senha']).decode('utf-8')
-
     usuario = tb_user.query.filter_by(name_user=nome).first()
     if usuario:
         flash ('Usuário já existe','danger')
@@ -186,9 +188,51 @@ def criarUsuarioexterno():
     db.session.add(novoUsuario)
     db.session.commit()
     flash('Usuário criado com sucesso, favor logar com ele','success')
-    return redirect(url_for('login'))    
+    return redirect(url_for('login'))  
 
-# rota para atualizar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarUsuario
+#FUNÇÃO: mostrar formulário de visualização dos usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarUsuario/<int:id>')
+def visualizarUsuario(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarUsuario')))    
+    usuario = tb_user.query.filter_by(cod_user=id).first()
+    form = FormularioUsuarioVisualizar()
+    form.nome.data = usuario.name_user
+    form.status.data = usuario.status_user
+    form.login.data = usuario.login_user
+    form.tipousuario.data = usuario.cod_usertype
+    form.email.data = usuario.email_user
+    return render_template('visualizarUsuario.html', titulo='Visualizar Usuário', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarUsuario
+#FUNÇÃO: mostrar formulário de edição dos usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/editarUsuario/<int:id>')
+def editarUsuario(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarUsuario/<int:id>')))  
+    usuario = tb_user.query.filter_by(cod_user=id).first()
+    form = FormularioUsuario()
+    form.nome.data = usuario.name_user
+    form.status.data = usuario.status_user
+    form.login.data = usuario.login_user
+    form.tipousuario.data = usuario.cod_usertype
+    form.email.data = usuario.email_user
+    return render_template('editarUsuario.html', titulo='Editar Usuário', id=id, form=form)    
+       
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarUsuario
+#FUNÇÃO: alterar as informações dos usuários no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/atualizarUsuario', methods=['POST',])
 def atualizarUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -209,7 +253,11 @@ def atualizarUsuario():
     flash('Usuário alterado com sucesso','success')
     return redirect(url_for('visualizarUsuario', id=id))
 
-# rota para visualizar usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarSenhaUsuario
+#FUNÇÃO: formulário para edição da tela do usuário
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/editarSenhaUsuario/')
 def editarSenhaUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -218,7 +266,11 @@ def editarSenhaUsuario():
     form = FormularioUsuarioTrocarSenha()
     return render_template('trocarsenha.html', titulo='Trocar Senha', id=id, form=form)  
 
-# rota para atualizar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: trocarSenhaUsuario
+#FUNÇÃO: alteração da senha do usuário no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/trocarSenhaUsuario', methods=['POST',])
 def trocarSenhaUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -247,11 +299,15 @@ def trocarSenhaUsuario():
         flash('senha não alterada!','danger')
     return redirect(url_for('editarSenhaUsuario')) 
 
-#---------------------------------------------------------------------------------------------------------------------------------
-#TIPO USUARIOS
-#---------------------------------------------------------------------------------------------------------------------------------
+##################################################################################################################################
+#TIPO DE USUARIOS
+##################################################################################################################################
 
-# rota index para mostrar os tipo usuários
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: tipousuario
+#FUNÇÃO: tela do sistema para mostrar os tipos de usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/tipousuario', methods=['POST','GET'])
 def tipousuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -272,7 +328,11 @@ def tipousuario():
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
     return render_template('tipousuarios.html', titulo='Tipo Usuário', tiposusuario=tiposusuario, form=form)
 
-# rota para criar novo formulário usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoTipoUsuario
+#FUNÇÃO: mostrar o formulário de cadastro de tipo de usuário
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/novoTipoUsuario')
 def novoTipoUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -281,7 +341,11 @@ def novoTipoUsuario():
     form = FormularioTipoUsuarioEdicao()
     return render_template('novoTipoUsuario.html', titulo='Novo Tipo Usuário', form=form)
 
-# rota para criar tipo usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarTipoUsuario
+#FUNÇÃO: inserir informações do tipo de usuário no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarTipoUsuario', methods=['POST',])
 def criarTipoUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -303,7 +367,11 @@ def criarTipoUsuario():
     db.session.commit()
     return redirect(url_for('tipousuario'))
 
-# rota para visualizar tipo usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarTipoUsuario
+#FUNÇÃO: mostrar formulário de visualização dos tipos de usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/visualizarTipoUsuario/<int:id>')
 def visualizarTipoUsuario(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -315,7 +383,11 @@ def visualizarTipoUsuario(id):
     form.status.data = tipousuario.status_usertype
     return render_template('visualizarTipoUsuario.html', titulo='Visualizar Tipo Usuário', id=id, form=form)   
 
-# rota para editar formulário tipo usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarTipoUsuario
+##FUNÇÃO: mostrar formulário de edição dos tipos de usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/editarTipoUsuario/<int:id>')
 def editarTipoUsuario(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -327,7 +399,11 @@ def editarTipoUsuario(id):
     form.status.data = tipousuario.status_usertype
     return render_template('editarTipoUsuario.html', titulo='Editar Tipo Usuário', id=id, form=form)   
 
-# rota para atualizar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarTipoUsuario
+#FUNÇÃO: alterar as informações dos tipos de usuários no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/atualizarTipoUsuario', methods=['POST',])
 def atualizarTipoUsuario():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -346,11 +422,15 @@ def atualizarTipoUsuario():
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarTipoUsuario', id=id))    
 
-#---------------------------------------------------------------------------------------------------------------------------------
+##################################################################################################################################
 #ACADEMIA
-#---------------------------------------------------------------------------------------------------------------------------------
+##################################################################################################################################
 
-# rota index para mostrar as academias cadastradas
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: academia
+#FUNÇÃO: tela do sistema para mostrar as academias cadastradas
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/academia', methods=['POST','GET'])
 def academia():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -370,7 +450,11 @@ def academia():
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
     return render_template('tipousuarios.html', titulo='Tipo Usuário', academias=academias, form=form)
 
-# rota para criar novo formulário usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoAcademia
+#FUNÇÃO: mostrar o formulário de cadastro de academia
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/novoAcademia')
 def novoAcademia():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -379,7 +463,11 @@ def novoAcademia():
     form = FormularioAcademiaEdicao()
     return render_template('novoAcademia.html', titulo='Nova Academia', form=form)
 
-# rota para criar tipo usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarAcademia
+#FUNÇÃO: inserir informações do academia no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarAcademia', methods=['POST',])
 def criarAcademia():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -402,7 +490,11 @@ def criarAcademia():
     db.session.commit()
     return redirect(url_for('academia'))
 
-# rota para visualizar tipo usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarAcademia
+#FUNÇÃO: mostrar formulário de visualização as academias cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/visualizarAcademia/<int:id>')
 def visualizarAcademia(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -415,7 +507,11 @@ def visualizarAcademia(id):
     form.status.data = academia.status_academia
     return render_template('visualizarAcademia.html', titulo='Visualizar Academia', id=id, form=form)   
 
-# rota para editar formulário tipo usuário 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarAcademia
+##FUNÇÃO: mostrar formulário de edição das academias cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/editarAcademia/<int:id>')
 def editarAcademia(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -428,7 +524,11 @@ def editarAcademia(id):
     form.status.data = academia.status_academia
     return render_template('editarTipoUsuario.html', titulo='Editar Academia', id=id, form=form)   
 
-# rota para atualizar usuário no banco de dados
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarAcademia
+#FUNÇÃO: alterar as informações dos academia no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/atualizarAcademia', methods=['POST',])
 def atualizarAcademia():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
