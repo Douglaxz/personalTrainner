@@ -127,7 +127,8 @@ class FormularioAlunoEdicao(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")])
     observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)],render_kw={"placeholder": "digite as observações do aluno"})    
     academia = SelectField('Academia:', coerce=int,  choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')])
-    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o telefone do usuário"})
+    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o telefone do aluno"})
+    diavencimento = IntegerField('Dia de Vencimento:', [validators.DataRequired()],render_kw={"placeholder": "digite o dia de vencimento do aluno"})
     salvar = SubmitField('Salvar')
 
 
@@ -144,4 +145,5 @@ class FormularioAlunoVisualizar(FlaskForm):
     observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={'readonly': True})
     academia = SelectField('Academia:', coerce=int, choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')], render_kw={'readonly': True})
     telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    diavencimento = IntegerField('Dia de Vencimento:', [validators.DataRequired()], render_kw={'readonly': True})
     salvar = SubmitField('Editar')

@@ -37,8 +37,8 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] Funcionalidade template
 - [X] Funcionalidade usuário
 - [X] Funcionalidade tipo de usuário
-- [ ] Funcionalidade Alunos
-- [ ] Funcionalidade Academias
+- [X] Funcionalidade Alunos
+- [X] Funcionalidade Academias
 - [ ] Funcionalidade Plano de treinamentos
 - [ ] Agendamento de aulas
 

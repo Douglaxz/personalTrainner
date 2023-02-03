@@ -615,11 +615,12 @@ def criarAluno():
     academia = form.academia.data
     status = form.status.data
     usuario = session['coduser_logado']
+    diavencimento = form.diavencimento.data
     aluno = tb_aluno.query.filter_by(nome_aluno=nome).first()
     if aluno:
         flash ('Aluno já existe','danger')
         return redirect(url_for('aluno')) 
-    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone)
+    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone,diavenc_aluno=diavencimento)
     flash('Aluno criado com sucesso!','success')
     db.session.add(novoAluno)
     db.session.commit()
@@ -639,7 +640,12 @@ def visualizarAluno(id):
     form = FormularioAlunoVisualizar()
     form.nome.data = aluno.nome_aluno
     form.endereco.data = aluno.end_aluno
+    form.telefone.data = aluno.telefone_aluno
+    form.academia.data = aluno.cod_academia
     form.status.data = aluno.status_aluno
+    form.datanascimento.data = aluno.datanasc_aluno
+    form.observacoes.data = aluno.obs_aluno
+    form.diavencimento.data = aluno.diavenc_aluno
     return render_template('visualizarAluno.html', titulo='Visualizar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -656,7 +662,12 @@ def editarAluno(id):
     form = FormularioAlunoEdicao()
     form.nome.data = aluno.nome_aluno
     form.endereco.data = aluno.end_aluno
+    form.telefone.data = aluno.telefone_aluno
+    form.academia.data = aluno.cod_academia
     form.status.data = aluno.status_aluno
+    form.datanascimento.data = aluno.datanasc_aluno
+    form.observacoes.data = aluno.obs_aluno
+    form.diavencimento.data = aluno.diavenc_aluno
     return render_template('editarAluno.html', titulo='Editar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -676,6 +687,11 @@ def atualizarAluno():
         aluno.nome_aluno = form.nome.data
         aluno.end_aluno = form.endereco.data
         aluno.status_aluno = form.status.data
+        aluno.telefone_aluno = form.telefone.data
+        aluno.datanasc_aluno = form.datanascimento.data
+        aluno.obs_aluno = form.observacoes.data
+        aluno.cod_academia = form.academia.data
+        aluno.diavenc_aluno = form.diavencimento.data        
         db.session.add(aluno)
         db.session.commit()
         flash('Aluno atualizado com sucesso!','success')
