@@ -16,7 +16,9 @@ from helpers import \
     FormularioTipoUsuarioEdicao,\
     FormularioTipoUsuarioVisualizar,\
     FormularioAcademiaEdicao,\
-    FormularioAcademiaVisualizar
+    FormularioAcademiaVisualizar,\
+    FormularioAlunoEdicao,\
+    FormularioAlunoVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -546,4 +548,130 @@ def atualizarAcademia():
         flash('Academia atualizada com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarAcademia', id=id))  
+    return redirect(url_for('visualizarAcademia', id=id))
+
+##################################################################################################################################
+#ALUNO
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: aluno
+#FUNÇÃO: tela do sistema para mostrar os alunos cadastradoss
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/aluno', methods=['POST','GET'])
+def aluno():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('aluno')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    if pesquisa == "" or pesquisa == None:     
+        alunos = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        alunos = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+        .filter(tb_aluno.nome_aluno.ilike(f'%{pesquisa}%'))\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
+    return render_template('alunos.html', titulo='Alunos', alunos=alunos, form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoAluno
+#FUNÇÃO: mostrar o formulário de cadastro de alunos
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoAluno')
+def novoAluno():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoAluno'))) 
+    form = FormularioAlunoEdicao()
+    return render_template('novoAluno.html', titulo='Novo Aluno', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarAluno
+#FUNÇÃO: inserir informações do aluno no banco de dados
+#PODE ACESSAR: usuários do tipo administrador e persoal
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarAluno', methods=['POST',])
+def criarAluno():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarAluno')))     
+    form = FormularioAlunoEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarAluno'))
+    nome  = form.nome.data
+    endereco  = form.endereco.data
+    status = form.status.data
+    aluno = tb_academia.query.filter_by(nome_aluno=nome).first()
+    if aluno:
+        flash ('Aluno já existe','danger')
+        return redirect(url_for('aluno')) 
+    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status)
+    flash('Aluno criado com sucesso!','success')
+    db.session.add(novoAluno)
+    db.session.commit()
+    return redirect(url_for('aluno'))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarAluno
+#FUNÇÃO: mostrar formulário de visualização os alunos cadastrados
+#PODE ACESSAR: usuários do tipo administrador e persoal
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarAluno/<int:id>')
+def visualizarAluno(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarAluno')))  
+    aluno = tb_aluno.query.filter_by(cod_aluno=id).first()
+    form = FormularioAlunoVisualizar()
+    form.nome.data = aluno.nome_aluno
+    form.endereco.data = aluno.end_aluno
+    form.status.data = aluno.status_aluno
+    return render_template('visualizarAluno.html', titulo='Visualizar Aluno', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarAluno
+##FUNÇÃO: mostrar formulário de edição dos alunos cadastrados
+#PODE ACESSAR: usuários do tipo administrador e persoal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/editarAluno/<int:id>')
+def editarAluno(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarAluno')))  
+    aluno = tb_aluno.query.filter_by(cod_aluno=id).first()
+    form = FormularioAlunoEdicao()
+    form.nome.data = aluno.nome_aluno
+    form.endereco.data = aluno.end_aluno
+    form.status.data = aluno.status_aluno
+    return render_template('editarAluno.html', titulo='Editar Aluno', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarAluno
+#FUNÇÃO: alterar as informações dos alunos no banco de dados
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarAluno', methods=['POST',])
+def atualizarAluno():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarAluno')))      
+    form = FormularioAlunoEdicao(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        aluno = tb_aluno.query.filter_by(cod_aluno=request.form['id']).first()
+        aluno.nome_aluno = form.nome.data
+        aluno.end_aluno = form.endereco.data
+        aluno.status_aluno = form.status.data
+        db.session.add(aluno)
+        db.session.commit()
+        flash('Aluno atualizado com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarAluno', id=id))
