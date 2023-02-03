@@ -18,6 +18,8 @@ class tb_usertype(db.Model):
     cod_usertype = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc_usertype = db.Column(db.String(50), nullable=False)
     status_usertype = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name    
 
 # criação da classe tipousuário conectada com o banco de dados mysql
 class tb_aluno(db.Model):
@@ -31,10 +33,24 @@ class tb_aluno(db.Model):
     obs_aluno = db.Column(db.String(200), nullable=False)
     telefone_aluno = db.Column(db.String(50), nullable=False) 
     diavenc_aluno = db.Column(db.Integer, nullable=False)
+    hrinicio_aluno= db.Column(db.Time, nullable=False)
+    hrfinal_aluno= db.Column(db.Time, nullable=False)
+    dom_aluno = db.Column(db.Integer, nullable=False)
+    seg_aluno = db.Column(db.Integer, nullable=False)
+    ter_aluno = db.Column(db.Integer, nullable=False)
+    qua_aluno = db.Column(db.Integer, nullable=False)
+    qui_aluno = db.Column(db.Integer, nullable=False)
+    sex_aluno = db.Column(db.Integer, nullable=False)
+    sab_aluno = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name    
+
 
 class tb_academia(db.Model):
     cod_academia = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome_academia = db.Column(db.String(50), nullable=False)
     end_academia = db.Column(db.String(90), nullable=False)
     status_academia = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name    
 

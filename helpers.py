@@ -3,7 +3,7 @@ import os
 from personal import app, db
 from models import tb_user, tb_usertype, tb_academia, tb_aluno
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField
+from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField
 
 ##################################################################################################################################
 #PESQUISA
@@ -127,8 +127,17 @@ class FormularioAlunoEdicao(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")])
     observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)],render_kw={"placeholder": "digite as observações do aluno"})    
     academia = SelectField('Academia:', coerce=int,  choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')])
-    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o telefone do aluno"})
+    telefone = StringField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o telefone do aluno"})
     diavencimento = IntegerField('Dia de Vencimento:', [validators.DataRequired()],render_kw={"placeholder": "digite o dia de vencimento do aluno"})
+    horarioinicio = TimeField('Horário Inicio:', [validators.DataRequired()],render_kw={"placeholder": "digite o horario de inicio do aluno"})
+    horariofinal = TimeField('Horário Fim:', [validators.DataRequired()],render_kw={"placeholder": "digite o horario fim do aluno"})
+    diadom = BooleanField('Domingo:')
+    diaseg = BooleanField('Segunda:')
+    diater = BooleanField('Terça:')
+    diaqua = BooleanField('Quarta:')
+    diaqui = BooleanField('Quinta:')
+    diasex = BooleanField('Sexta:')
+    diasab = BooleanField('Sábado:')
     salvar = SubmitField('Salvar')
 
 
@@ -144,6 +153,15 @@ class FormularioAlunoVisualizar(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")], render_kw={'readonly': True})
     observacoes = TextAreaField('Observações:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={'readonly': True})
     academia = SelectField('Academia:', coerce=int, choices=[(g.cod_academia, g.nome_academia) for g in tb_academia.query.order_by('nome_academia')], render_kw={'readonly': True})
-    telefone = EmailField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    telefone = StringField('Telefone:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     diavencimento = IntegerField('Dia de Vencimento:', [validators.DataRequired()], render_kw={'readonly': True})
-    salvar = SubmitField('Editar')
+    horarioinicio = TimeField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    horariofinal = TimeField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    diadom = BooleanField('Domingo:', render_kw={'readonly': True})
+    diaseg = BooleanField('Segunda:', render_kw={'readonly': True})
+    diater = BooleanField('Terça:', render_kw={'readonly': True})
+    diaqua = BooleanField('Quarta:', render_kw={'readonly': True})
+    diaqui = BooleanField('Quinta:', render_kw={'readonly': True})
+    diasex = BooleanField('Sexta:', render_kw={'readonly': True})
+    diasab = BooleanField('Sábado:', render_kw={'readonly': True})    
+    salvar = SubmitField('Editar', render_kw={'readonly': True})

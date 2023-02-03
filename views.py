@@ -253,7 +253,7 @@ def atualizarUsuario():
     db.session.add(usuario)
     db.session.commit()
     flash('Usuário alterado com sucesso','success')
-    return redirect(url_for('visualizarUsuario', id=id))
+    return redirect(url_for('visualizarUsuario', id=request.form['id']))
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: editarSenhaUsuario
@@ -422,7 +422,7 @@ def atualizarTipoUsuario():
         flash('Tipo de usuário atualizado com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarTipoUsuario', id=id))    
+    return redirect(url_for('visualizarTipoUsuario', id=request.form['id']))    
 
 ##################################################################################################################################
 #ACADEMIA
@@ -548,7 +548,7 @@ def atualizarAcademia():
         flash('Academia atualizada com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarAcademia', id=id))
+    return redirect(url_for('visualizarAcademia', id=request.form['id']))
 
 ##################################################################################################################################
 #ALUNO
@@ -600,9 +600,15 @@ def novoAluno():
 #--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarAluno', methods=['POST',])
 def criarAluno():
+    
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('criarAluno')))     
+    form = FormularioAlunoEdicao(request.form)
+    
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('novoAluno'))
     form = FormularioAlunoEdicao(request.form)
     if not form.validate_on_submit():
         flash('Por favor, preencha todos os dados','danger')
@@ -617,10 +623,19 @@ def criarAluno():
     usuario = session['coduser_logado']
     diavencimento = form.diavencimento.data
     aluno = tb_aluno.query.filter_by(nome_aluno=nome).first()
+    horarioinicio = form.horarioinicio.data
+    horariofinal = form.horariofinal.data
+    dom = form.diadom.data
+    seg = form.diaseg.data
+    ter = form.diater.data
+    qua = form.diaqua.data
+    qui = form.diaqui.data
+    sex = form.diasex.data
+    sab = form.diasab.data    
     if aluno:
         flash ('Aluno já existe','danger')
         return redirect(url_for('aluno')) 
-    novoAluno = tb_aluno(nome_aluno=nome, end_aluno=endereco, status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone,diavenc_aluno=diavencimento)
+    novoAluno = tb_aluno(nome_aluno=nome,end_aluno=endereco,status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone,diavenc_aluno=diavencimento,hrinicio_aluno=horarioinicio,hrfinal_aluno=horariofinal,dom_aluno = dom,seg_aluno = seg,ter_aluno = ter,qua_aluno = qua,qui_aluno = qui,sex_aluno = sex,sab_aluno = sab)
     flash('Aluno criado com sucesso!','success')
     db.session.add(novoAluno)
     db.session.commit()
@@ -643,9 +658,18 @@ def visualizarAluno(id):
     form.telefone.data = aluno.telefone_aluno
     form.academia.data = aluno.cod_academia
     form.status.data = aluno.status_aluno
-    form.datanascimento.data = aluno.datanasc_aluno
+    form.datanascimento.data = aluno.datanasc_aluno.strftime("%d/%m/%Y")
     form.observacoes.data = aluno.obs_aluno
     form.diavencimento.data = aluno.diavenc_aluno
+    form.horarioinicio.data = aluno.hrinicio_aluno
+    form.horariofinal.data = aluno.hrfinal_aluno
+    form.diadom.data = aluno.dom_aluno
+    form.diaseg.data = aluno.seg_aluno
+    form.diater.data = aluno.ter_aluno
+    form.diaqua.data = aluno.qua_aluno
+    form.diaqui.data = aluno.qui_aluno
+    form.diasex.data = aluno.sex_aluno
+    form.diasab.data = aluno.sab_aluno
     return render_template('visualizarAluno.html', titulo='Visualizar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -668,6 +692,15 @@ def editarAluno(id):
     form.datanascimento.data = aluno.datanasc_aluno
     form.observacoes.data = aluno.obs_aluno
     form.diavencimento.data = aluno.diavenc_aluno
+    form.horarioinicio.data = aluno.hrinicio_aluno
+    form.horariofinal.data = aluno.hrfinal_aluno
+    form.diadom.data = aluno.dom_aluno
+    form.diaseg.data = aluno.seg_aluno
+    form.diater.data = aluno.ter_aluno
+    form.diaqua.data = aluno.qua_aluno
+    form.diaqui.data = aluno.qui_aluno
+    form.diasex.data = aluno.sex_aluno
+    form.diasab.data = aluno.sab_aluno    
     return render_template('editarAluno.html', titulo='Editar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -675,7 +708,7 @@ def editarAluno(id):
 #FUNÇÃO: alterar as informações dos alunos no banco de dados
 #PODE ACESSAR: usuários do tipo administrador e personal
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/atualizarAluno', methods=['POST',])
+@app.route('/atualizarAluno', methods=['POST','GET'])
 def atualizarAluno():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
@@ -691,10 +724,20 @@ def atualizarAluno():
         aluno.datanasc_aluno = form.datanascimento.data
         aluno.obs_aluno = form.observacoes.data
         aluno.cod_academia = form.academia.data
-        aluno.diavenc_aluno = form.diavencimento.data        
+        aluno.diavenc_aluno = form.diavencimento.data
+        aluno.hrinicio_aluno = form.horarioinicio.data
+        aluno.hrfinal_aluno = form.horariofinal.data
+        aluno.dom_aluno = form.diadom.data
+        aluno.seg_aluno = form.diaseg.data
+        aluno.ter_aluno = form.diater.data
+        aluno.qua_aluno = form.diaqua.data
+        aluno.qui_aluno = form.diaqui.data
+        aluno.sex_aluno = form.diasex.data
+        aluno.sab_aluno = form.diasab.data
+
         db.session.add(aluno)
         db.session.commit()
         flash('Aluno atualizado com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarAluno', id=id))
+    return redirect(url_for('visualizarAluno', id=request.form['id']))
