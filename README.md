@@ -39,7 +39,7 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] Funcionalidade tipo de usuário
 - [X] Funcionalidade Alunos
 - [X] Funcionalidade Academias
-- [ ] Funcionalidade Plano de treinamentos
+- [ ] Funcionalidade Agendamentos
 - [ ] Agendamento de aulas
 
 

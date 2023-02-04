@@ -7,7 +7,8 @@ from personal import app, db
 from models import tb_user,\
     tb_usertype,\
     tb_academia,\
-    tb_aluno
+    tb_aluno,\
+    tb_agenda
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -741,3 +742,32 @@ def atualizarAluno():
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarAluno', id=request.form['id']))
+
+##################################################################################################################################
+#AGENDA
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: agenda
+#FUNÇÃO: tela do sistema para mostrar o agendamento dos alunos
+#PODE ACESSAR: somente o personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/aluno', methods=['POST','GET'])
+def aluno():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('aluno')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    if pesquisa == "" or pesquisa == None:     
+        agenda = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        .filter(tb_agenda.cod_user == session['coduser_logado'])\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        agenda = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        .filter(tb_agenda.data_agenda == pesquisa)\
+        .filter(tb_agenda.cod_user == session['usuario_logado'])\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
+    return render_template('agenda.html', titulo='Agenda', agenda=agenda, form=form)

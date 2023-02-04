@@ -54,3 +54,12 @@ class tb_academia(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name    
 
+class tb_agenda(db.Model):
+    cod_agenda = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cod_user = db.Column(db.Integer, nullable=False)
+    data_agenda = db.Column(db.DateTime, nullable=False)
+    status_agenda = db.Column(db.Integer, nullable=False)
+    cod_aluno = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name 
+

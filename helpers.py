@@ -165,3 +165,16 @@ class FormularioAlunoVisualizar(FlaskForm):
     diasex = BooleanField('Sexta:', render_kw={'readonly': True})
     diasab = BooleanField('Sábado:', render_kw={'readonly': True})    
     salvar = SubmitField('Editar', render_kw={'readonly': True})
+
+##################################################################################################################################
+#AGENDAMENTO
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: agendamento
+#TIPO: edição
+#TABELA: agendamento
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioAcademiaVisualizar(FlaskForm):
+    datainicio = DateField('Data Inicio:', [validators.DataRequired()],render_kw={"placeholder": "digite a data de inicio do agendamento"})
+    datafim = DateField('Data Fim:', [validators.DataRequired()],render_kw={"placeholder": "digite a data final do agendamento"})
+    salvar = SubmitField('Salvar')    
