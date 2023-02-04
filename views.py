@@ -19,7 +19,9 @@ from helpers import \
     FormularioAcademiaEdicao,\
     FormularioAcademiaVisualizar,\
     FormularioAlunoEdicao,\
-    FormularioAlunoVisualizar
+    FormularioAlunoVisualizar,\
+    FormularioAgendaEdicao,\
+    FormularioAgendaVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -601,7 +603,6 @@ def novoAluno():
 #--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarAluno', methods=['POST',])
 def criarAluno():
-    
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('criarAluno')))     
@@ -611,9 +612,6 @@ def criarAluno():
         flash('Por favor, preencha todos os dados','danger')
         return redirect(url_for('novoAluno'))
     form = FormularioAlunoEdicao(request.form)
-    if not form.validate_on_submit():
-        flash('Por favor, preencha todos os dados','danger')
-        return redirect(url_for('criarAluno'))
     nome  = form.nome.data
     endereco  = form.endereco.data
     telefone  = form.telefone.data
@@ -751,8 +749,8 @@ def atualizarAluno():
 #FUNÇÃO: tela do sistema para mostrar o agendamento dos alunos
 #PODE ACESSAR: somente o personal
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/aluno', methods=['POST','GET'])
-def aluno():
+@app.route('/agenda', methods=['POST','GET'])
+def agenda():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('aluno')))         
@@ -762,12 +760,227 @@ def aluno():
     if pesquisa == "":
         pesquisa = form.pesquisa_responsiva.data
     if pesquisa == "" or pesquisa == None:     
-        agenda = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
+        .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
+        .add_columns(tb_aluno.nome_aluno, tb_aluno.hrinicio_aluno, tb_academia.nome_academia, tb_agenda.cod_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
-        agenda = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+        .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
+        .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
+        .add_columns(tb_aluno.nome_aluno, tb_aluno.hrinicio_aluno, tb_academia.nome_academia, tb_agenda.cod_agenda)\
+        .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .filter(tb_agenda.data_agenda == pesquisa)\
-        .filter(tb_agenda.cod_user == session['usuario_logado'])\
-        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
-    return render_template('agenda.html', titulo='Agenda', agenda=agenda, form=form)
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)        
+    return render_template('agenda.html', titulo='Agenda', agendas=agendas, form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoAgenda
+#FUNÇÃO: mostrar o formulário de cadastro de agenda
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoAgenda')
+def novoAgenda():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoAgenda'))) 
+    form = FormularioAgendaEdicao()
+    return render_template('novoAgenda.html', titulo='Nova Agenda', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarAgenda
+#FUNÇÃO: inserir informações da agenda no banco de dados
+#PODE ACESSAR: área do sistema
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarAgenda', methods=['POST',])
+def criarAgenda():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarAgenda')))     
+    form = FormularioAgendaEdicao(request.form)
+    
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('novoAgenda'))
+    
+    datainicio = form.datainicio.data
+    datafim = form.datafim.data
+
+    if datainicio > datafim:
+        flash('A data de inicio é maior que a data de fim ','danger')
+        return redirect(url_for('novoAgenda')) 
+
+    def daterange(start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    start_date = (datainicio)
+    end_date = (datafim)+ timedelta(days=1)
+    for single_date in daterange(start_date, end_date):
+        diasemana = single_date.weekday()
+        match diasemana:
+            case 0:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.seg_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()
+            case 1:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.ter_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()     
+            case 2:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.qua_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()  
+            case 3:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.qui_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()
+            case 4:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.sex_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()  
+            case 5:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.sab_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()         
+            case 6:
+                temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+                .filter(tb_aluno.dom_aluno == 1)\
+                .filter(tb_aluno.cod_user == session['coduser_logado'])\
+                .filter(tb_aluno.status_aluno == 0)
+                for aluno in temAluno:
+                    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+                    .filter(tb_agenda.cod_aluno == aluno.cod_aluno)\
+                    .filter(tb_agenda.data_agenda == single_date)\
+                    .filter(tb_agenda.cod_user == session['coduser_logado'])
+                    rows = agendas.count()
+                    if rows == 0:
+                        hora = str(aluno.hrinicio_aluno)
+                        hora = hora[0:5]
+                        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+                        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+                        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+                        db.session.add(novoAgenda)
+                        db.session.commit()                                                                                                                                        
+    return redirect(url_for('agenda'))
+    
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarAgenda
+#FUNÇÃO: visualizar informações da agenda no banco de dados
+#PODE ACESSAR: personal
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarAgenda/<int:id>')
+def visualizarAgenda(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarAgenda')))  
+    agenda = tb_agenda.query.filter_by(cod_agenda=id).first()
+    aluno = tb_aluno.query.filter_by(cod_aluno=agenda.cod_aluno).first()
+    academia = tb_academia.query.filter_by(cod_academia=aluno.cod_academia).first() 
+    form = FormularioAgendaVisualizar()
+    form.nome.data = aluno.nome_aluno
+    form.academia.data = academia.nome_academia
+    form.status.data = agenda.status_agenda
+    form.horario.data = agenda.data_agenda.strftime('%d/%m/%Y %H:%M')
+    return render_template('visualizarAgenda.html', titulo='Visualizar Agenda', id=id, form=form) 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarAgenda
+#FUNÇÃO: visualizar informações da agenda no banco de dados
+#PODE ACESSAR: personal
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/editarAgenda', methods=['POST',])
+def editarAgenda():
+    pass

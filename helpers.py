@@ -167,14 +167,25 @@ class FormularioAlunoVisualizar(FlaskForm):
     salvar = SubmitField('Editar', render_kw={'readonly': True})
 
 ##################################################################################################################################
-#AGENDAMENTO
+#AGENDA
 ##################################################################################################################################
 #---------------------------------------------------------------------------------------------------------------------------------
-#FORMUÁRIO: agendamento
+#FORMUÁRIO: agenda criação
 #TIPO: edição
-#TABELA: agendamento
+#TABELA: agenda
 #---------------------------------------------------------------------------------------------------------------------------------
-class FormularioAcademiaVisualizar(FlaskForm):
+class FormularioAgendaEdicao(FlaskForm):
     datainicio = DateField('Data Inicio:', [validators.DataRequired()],render_kw={"placeholder": "digite a data de inicio do agendamento"})
     datafim = DateField('Data Fim:', [validators.DataRequired()],render_kw={"placeholder": "digite a data final do agendamento"})
-    salvar = SubmitField('Salvar')    
+    salvar = SubmitField('Salvar')   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: visualizar agenda
+#TIPO: visualização
+#TABELA: agenda
+#--------------------------------------------------------------------------------------------------------------------------------- 
+class FormularioAgendaVisualizar(FlaskForm):
+    horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")], render_kw={'readonly': True})
