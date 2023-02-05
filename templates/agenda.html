@@ -28,7 +28,7 @@
   <table class="table table-striped table-responsiv">
       <thead class="bg-dark text-white">
           <tr>
-              <th class="text-left col-md-2">Horário</th>
+              <th class="text-left col-md-4">Horário</th>
               <th class="text-left col-md-4">Nome</th>
               <th class="text-left col-md-4">Academia</th>
               <th class="text-left col-md-2">Ações</th>
@@ -38,7 +38,7 @@
           {% for agenda in agendas.items %}
           <tr>
               <td class="text-left">
-                {{ agenda.hrinicio_aluno}}
+                {{ agenda.data_agenda.strftime('%d/%m/%Y %H:%M') }}
               </td>
               <td class="text-left">
                 {{ agenda.nome_aluno }}

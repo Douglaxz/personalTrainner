@@ -764,14 +764,14 @@ def agenda():
         agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
         .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
         .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
-        .add_columns(tb_aluno.nome_aluno, tb_aluno.hrinicio_aluno, tb_academia.nome_academia, tb_agenda.cod_agenda)\
+        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
         agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
         .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
         .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
-        .add_columns(tb_aluno.nome_aluno, tb_aluno.hrinicio_aluno, tb_academia.nome_academia, tb_agenda.cod_agenda)\
+        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .filter(tb_agenda.data_agenda == pesquisa)\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)        
@@ -995,13 +995,17 @@ def editarAgenda(id):
     form.nome.data = aluno.nome_aluno
     form.academia.data = academia.nome_academia
     form.status.data = agenda.status_agenda
-    form.horario.data = agenda.data_agenda.strftime('%d/%m/%Y %H:%M') 
+    #form.horario.data = agenda.data_agenda.strftime('%Y/%m/%d %H:%M:%S') 
+    #form.horario.data = datetime.strptime(agenda.data_agenda, '%Y/%m/%d  %H:%M:%S')
+    form.horario.data = agenda.data_agenda
+
+
     return render_template('editarAgenda.html', titulo='Editar Agenda', id=id, form=form)  
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: atualizarAluno
-#FUNÇÃO: alterar as informações dos alunos no banco de dados
-#PODE ACESSAR: usuários do tipo administrador e personal
+#ROTA: atualizarAgenda
+#FUNÇÃO: alterar as informações da agenda no banco de dados
+#PODE ACESSAR: personal
 #---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/atualizarAgenda', methods=['POST','GET'])
 def atualizarAgenda():
@@ -1013,7 +1017,7 @@ def atualizarAgenda():
         id = request.form['id']
         agenda = tb_agenda.query.filter_by(cod_agenda=id).first()
         agenda.data_agenda = form.horario.data
-        agenda.status_agenda = form.endereco.data
+        agenda.status_agenda = form.status.data
         db.session.add(agenda)
         db.session.commit()
         flash('Agenda atualizada com sucesso!','success')

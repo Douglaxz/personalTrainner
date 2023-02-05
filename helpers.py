@@ -3,7 +3,7 @@ import os
 from personal import app, db
 from models import tb_user, tb_usertype, tb_academia, tb_aluno
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeField
+from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeLocalField
 
 ##################################################################################################################################
 #PESQUISA
@@ -188,7 +188,7 @@ class FormularioAgendaVisualizar(FlaskForm):
     horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")], render_kw={'readonly': True})
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: editar agenda
@@ -196,7 +196,7 @@ class FormularioAgendaVisualizar(FlaskForm):
 #TABELA: agenda
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioAgendaEdicao1(FlaskForm):
-    horario = DateTimeField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")])
