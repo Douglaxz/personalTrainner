@@ -764,14 +764,14 @@ def agenda():
         agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
         .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
         .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
-        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda)\
+        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda, tb_agenda.status_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
         agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
         .join(tb_aluno, tb_aluno.cod_aluno==tb_agenda.cod_aluno)\
         .join(tb_academia, tb_aluno.cod_academia==tb_academia.cod_academia)\
-        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda)\
+        .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda, tb_agenda.status_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .filter(tb_agenda.data_agenda == pesquisa)\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)        

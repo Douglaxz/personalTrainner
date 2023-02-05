@@ -29,9 +29,9 @@
       <thead class="bg-dark text-white">
           <tr>
               <th class="text-left col-md-4">Horário</th>
-              <th class="text-left col-md-4">Nome</th>
-              <th class="text-left col-md-4">Academia</th>
-              <th class="text-left col-md-2">Ações</th>
+              <th class="text-left col-md-8">Nome</th>
+              <th class="text-center col-md-2">Situação</th>
+              <th class="text-center col-md-2">Ações</th>
           </tr>
       </thead>
       <tbody>
@@ -43,10 +43,21 @@
               <td class="text-left">
                 {{ agenda.nome_aluno }}
               </td>
-              <td class="text-left">
-                {{ agenda.nome_academia }}
+              <td class="text-center">
+                {% if agenda.status_agenda == 0: %}
+                <i class="bi bi-calendar-week" style="font-size:2rem; color:orange;">
+                {% endif %}
+                {% if agenda.status_agenda == 1: %}
+                <i class="bi bi-calendar2-check" style="font-size:2rem; color:green;">
+                {% endif %}  
+                {% if agenda.status_agenda == 2: %}
+                <i class="bi bi-calendar2-x" style="font-size:2rem; color:red;">
+                {% endif %}  
+                {% if agenda.status_agenda == 3: %}
+                <i class="bi bi-calendar4" style="font-size:2rem; color:purple;">
+                {% endif %}                                  
               </td>
-              <td>
+              <td align="center">
                 <a class="btn" href="{{url_for('visualizarAgenda',id=agenda.cod_agenda)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
               </td>              
           </tr>

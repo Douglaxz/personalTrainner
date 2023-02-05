@@ -188,7 +188,7 @@ class FormularioAgendaVisualizar(FlaskForm):
     horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Realizada"),(2,"Cancelada - Faltou"),(3,"Cancelada - Reposição")], render_kw={'readonly': True})
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: editar agenda
@@ -199,4 +199,4 @@ class FormularioAgendaEdicao1(FlaskForm):
     horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")])
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Realizada"),(2,"Cancelada - Faltou"),(3,"Cancelada - Reposição")])
