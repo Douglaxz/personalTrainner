@@ -200,3 +200,16 @@ class FormularioAgendaEdicao1(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Realizada"),(2,"Cancelada - Faltou"),(3,"Cancelada - Reposição")])
+
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: editar agenda não programada
+#TIPO: edição
+#TABELA: agenda
+#--------------------------------------------------------------------------------------------------------------------------------- 
+
+
+class FormularioAgendaEdicao2(FlaskForm):
+    horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
+    aluno =SelectField('Aluno:', coerce=int,  choices=[(g.cod_aluno, g.nome_aluno) for g in tb_aluno.query.order_by('nome_aluno')])
+    teste =SelectField('sadsadsd:', coerce=int)

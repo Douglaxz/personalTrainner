@@ -9,7 +9,7 @@
     <div class="p-2"><a class="btn btn-warning" href="#" onclick="myFunction()"><i class="bi bi-search" style="font-size:1.5rem; color:white;"></i></a></div>
     <div class="p-2"><a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-eraser" style="font-size:1.5rem; color:white;"></i></a></div>
     <div class="p-2"><a class="btn btn-success" href="{{url_for('novoAgenda')}}"><i class="bi bi-calendar2-plus" style="font-size:1.5rem; color:white;"></i></a></div>
-    <div class="p-2"><a class="btn btn-success" href="{{url_for('novoAgenda')}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
+    <div class="p-2"><a class="btn btn-success" href="{{url_for('novoAgendaNaoProgramada',usuario=usuario)}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
   </div>
 <!-- final -->
 <!-- barra de navegação para mobile -->
@@ -19,7 +19,7 @@
     <div class="p-2 align-items-center"><a class="btn btn-warning" href="#" onclick="myFunction()"><i class="bi bi-search" style="font-size:1.5rem; color:white;"></i></a>
     <a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-eraser" style="font-size:1.5rem; color:white;"></i></a>
     <a class="btn btn-success" href="{{url_for('novoAgenda')}}"><i class="bi bi-calendar2-plus" style="font-size:1.5rem; color:white;"></i></a>
-    <a class="btn btn-success" href="{{url_for('novoAgenda')}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
+    <a class="btn btn-success" href="{{url_for('novoAgendaNaoProgramada',usuario=usuario)}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a></div>
   </div>
 <!-- final -->
 </form>

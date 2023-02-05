@@ -22,7 +22,8 @@ from helpers import \
     FormularioAlunoVisualizar,\
     FormularioAgendaEdicao,\
     FormularioAgendaVisualizar,\
-    FormularioAgendaEdicao1
+    FormularioAgendaEdicao1,\
+    FormularioAgendaEdicao2
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -774,8 +775,9 @@ def agenda():
         .add_columns(tb_aluno.nome_aluno, tb_agenda.data_agenda, tb_academia.nome_academia, tb_agenda.cod_agenda, tb_agenda.status_agenda)\
         .filter(tb_agenda.cod_user == session['coduser_logado'])\
         .filter(tb_agenda.data_agenda == pesquisa)\
-        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)        
-    return render_template('agenda.html', titulo='Agenda', agendas=agendas, form=form)
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)   
+    usuario = int(session['coduser_logado'])     
+    return render_template('agenda.html', titulo='Agenda', agendas=agendas, form=form,usuario=usuario)
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: novoAgenda
@@ -789,6 +791,39 @@ def novoAgenda():
         return redirect(url_for('login',proxima=url_for('novoAgenda'))) 
     form = FormularioAgendaEdicao()
     return render_template('novoAgenda.html', titulo='Nova Agenda', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoAgendaunica
+#FUNÇÃO: mostrar o formulário de cadastro de agenda para casos não programados
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoAgendaNaoProgramada')
+def novoAgendaNaoProgramada():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoAgenda'))) 
+    
+    alunos = tb_aluno.query.filter_by(cod_user=session['coduser_logado']).all()
+
+    lista = "["
+    for aluno in alunos:
+        lista = lista + "("
+        lista = lista + str(aluno.cod_aluno)
+        lista = lista + ","
+        lista = lista + "'"
+        lista = lista + aluno.nome_aluno
+        lista = lista + "'"
+        lista = lista + ")"
+        lista = lista + ","
+
+    lista = lista + "]"
+
+    
+
+    form = FormularioAgendaEdicao2()
+
+        
+    return render_template('novoAgendaNaoProgramada.html', titulo='Nova Agenda', form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: criarAgenda
