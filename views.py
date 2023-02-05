@@ -21,7 +21,8 @@ from helpers import \
     FormularioAlunoEdicao,\
     FormularioAlunoVisualizar,\
     FormularioAgendaEdicao,\
-    FormularioAgendaVisualizar
+    FormularioAgendaVisualizar,\
+    FormularioAgendaEdicao1
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -976,11 +977,46 @@ def visualizarAgenda(id):
     form.horario.data = agenda.data_agenda.strftime('%d/%m/%Y %H:%M')
     return render_template('visualizarAgenda.html', titulo='Visualizar Agenda', id=id, form=form) 
 
+
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: editarAgenda
 #FUNÇÃO: visualizar informações da agenda no banco de dados
 #PODE ACESSAR: personal
-#--------------------------------------------------------------------------------------------------------------------------------- 
-@app.route('/editarAgenda', methods=['POST',])
-def editarAgenda():
-    pass
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/editarAgenda/<int:id>')
+def editarAgenda(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarAluno')))  
+    agenda = tb_agenda.query.filter_by(cod_agenda=id).first()
+    aluno = tb_aluno.query.filter_by(cod_aluno=agenda.cod_aluno).first()
+    academia = tb_academia.query.filter_by(cod_academia=aluno.cod_academia).first()     
+    form = FormularioAgendaEdicao1()
+    form.nome.data = aluno.nome_aluno
+    form.academia.data = academia.nome_academia
+    form.status.data = agenda.status_agenda
+    form.horario.data = agenda.data_agenda.strftime('%d/%m/%Y %H:%M') 
+    return render_template('editarAgenda.html', titulo='Editar Agenda', id=id, form=form)  
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarAluno
+#FUNÇÃO: alterar as informações dos alunos no banco de dados
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarAgenda', methods=['POST','GET'])
+def atualizarAgenda():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarAluno')))      
+    form = FormularioAgendaEdicao1(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        agenda = tb_agenda.query.filter_by(cod_agenda=id).first()
+        agenda.data_agenda = form.horario.data
+        agenda.status_agenda = form.endereco.data
+        db.session.add(agenda)
+        db.session.commit()
+        flash('Agenda atualizada com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarAgenda', id=request.form['id']))

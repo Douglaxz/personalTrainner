@@ -3,7 +3,7 @@ import os
 from personal import app, db
 from models import tb_user, tb_usertype, tb_academia, tb_aluno
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField
+from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeField
 
 ##################################################################################################################################
 #PESQUISA
@@ -189,3 +189,14 @@ class FormularioAgendaVisualizar(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0,"Ativo"),(1,"Inativo")], render_kw={'readonly': True})
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: editar agenda
+#TIPO: edição
+#TABELA: agenda
+#--------------------------------------------------------------------------------------------------------------------------------- 
+class FormularioAgendaEdicao1(FlaskForm):
+    horario = DateTimeField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    academia = StringField('Academia:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Executada"),(2,"Não executada - Faltou"),(3,"Não executada - Reposição")], render_kw={'readonly': True})
