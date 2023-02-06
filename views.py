@@ -29,7 +29,8 @@ from helpers import \
     FormularioTipoPagamentoEdicao,\
     FormularioTipoPagamentoVisualizar,\
     FormularioRecebimentoEdicao,\
-    FormularioRecebimentoVisualizar
+    FormularioRecebimentoVisualizar,\
+    FormularioRecebimentoEdicao1
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -1309,8 +1310,50 @@ def visualizarRecebimento(id):
     aluno = tb_aluno.query.filter_by(cod_aluno=recebimento.cod_aluno).first()
     tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=aluno.cod_tipopagamento).first() 
     form = FormularioRecebimentoVisualizar()
-    form.nome.data = aluno.nome_aluno
-    form.tipopagamento.data = tipopagamento.desc_tipopagamento
-    form.status.data = recebimento.status_agenda
-    form.horario.data = recebimento.dataprev_recebimento.strftime('%d/%m/%Y')
+    form.aluno.data = aluno.nome_aluno
+    form.formapagamento.data = tipopagamento.desc_tipopagamento
+    form.status.data = recebimento.status_recebimento
+    form.data.data = recebimento.dataprev_recebimento.strftime('%d/%m/%Y')
     return render_template('visualizarRecebimento.html', titulo='Visualizar Recebimento', id=id, form=form) 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarRecebimento
+##FUNÇÃO: mostrar formulário de edição dos recebimentos cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/editarRecebimento/<int:id>')
+def editarRecebimento(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarTipoPagamento')))  
+    recebimento = tb_recebimento.query.filter_by(cod_recebimento=id).first()
+    aluno = tb_aluno.query.filter_by(cod_aluno=recebimento.cod_aluno).first()
+    tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=aluno.cod_tipopagamento).first()     
+    form = FormularioRecebimentoEdicao1()
+    form.aluno.data = aluno.nome_aluno
+    form.formapagamento.data = tipopagamento.desc_tipopagamento
+    form.status.data = recebimento.status_recebimento
+    form.data.data = recebimento.dataprev_recebimento.strftime('%d/%m/%Y')
+    return render_template('editarRecebimento.html', titulo='Editar Recebimento', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarRecebimento
+#FUNÇÃO: alterar as informações dos recebimentos no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarRecebimento', methods=['POST',])
+def atualizarRecebimento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarTipoPagamento')))      
+    form = FormularioRecebimentoEdicao1(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        recebimento = tb_recebimento.query.filter_by(cod_recebimento=request.form['id']).first()
+        recebimento.status_recebimento = form.status.data
+        db.session.add(recebimento)
+        db.session.commit()
+        flash('Recebimento atualizado com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarRecebimento', id=request.form['id'])) 

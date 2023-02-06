@@ -47,17 +47,11 @@
               </td>              
               <td class="text-center">
                 {% if recebimento.status_recebimento == 0: %}
-                <i class="bi bi-calendar-week" style="font-size:2rem; color:orange;">
+                <i class="bi bi-dash-circle" style="font-size:2rem; color:red;">
                 {% endif %}
                 {% if recebimento.status_recebimento == 1: %}
-                <i class="bi bi-calendar2-check" style="font-size:2rem; color:green;">
-                {% endif %}  
-                {% if recebimento.status_recebimento == 2: %}
-                <i class="bi bi-calendar2-x" style="font-size:2rem; color:red;">
-                {% endif %}  
-                {% if recebimento.status_recebimento == 3: %}
-                <i class="bi bi-calendar4" style="font-size:2rem; color:purple;">
-                {% endif %}                                  
+                <i class="bi bi-check-circle" style="font-size:2rem; color:green;">
+                {% endif %}                                 
               </td>
               <td align="center">
                 <a class="btn" href="{{url_for('visualizarRecebimento',id=recebimento.cod_recebimento)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>

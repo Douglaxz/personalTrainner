@@ -256,10 +256,10 @@ class FormularioRecebimentoEdicao(FlaskForm):
 #TABELA: tb_recebimento
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioRecebimentoVisualizar(FlaskForm):
-    horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
-    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    data = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    aluno = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     formapagamento = StringField('Forma de pagamento:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Não realizado"),(1,"Realizado")], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Pendente"),(1,"Pago")], render_kw={'readonly': True})
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: editar recebimento
@@ -267,10 +267,10 @@ class FormularioRecebimentoVisualizar(FlaskForm):
 #TABELA: tb_recebimento
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioRecebimentoEdicao1(FlaskForm):
-    horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
-    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    data = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    aluno = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
     formapagamento = StringField('Forma de pagamento:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Realizada"),(2,"Cancelada - Faltou"),(3,"Cancelada - Reposição")])
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Pendente"),(1,"Pago")])
 
 
 #---------------------------------------------------------------------------------------------------------------------------------
