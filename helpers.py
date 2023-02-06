@@ -207,9 +207,6 @@ class FormularioAgendaEdicao1(FlaskForm):
 #TIPO: edição
 #TABELA: agenda
 #--------------------------------------------------------------------------------------------------------------------------------- 
-
-
 class FormularioAgendaEdicao2(FlaskForm):
     horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
-    aluno =SelectField('Aluno:', coerce=int,  choices=[(g.cod_aluno, g.nome_aluno) for g in tb_aluno.query.order_by('nome_aluno')])
-    teste =SelectField('sadsadsd:', coerce=int)
+    aluno =SelectField('Aluno:', [validators.DataRequired()], choices=[])

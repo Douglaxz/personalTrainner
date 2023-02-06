@@ -793,36 +793,17 @@ def novoAgenda():
     return render_template('novoAgenda.html', titulo='Nova Agenda', form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: novoAgendaunica
+#ROTA: novoAgendaNaoProgramada
 #FUNÇÃO: mostrar o formulário de cadastro de agenda para casos não programados
 #PODE ACESSAR: usuários do tipo administrador e personal
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/novoAgendaNaoProgramada')
+@app.route('/novoAgendaNaoProgramada', methods=['POST','GET'])
 def novoAgendaNaoProgramada():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('novoAgenda'))) 
-    
-    alunos = tb_aluno.query.filter_by(cod_user=session['coduser_logado']).all()
-
-    lista = "["
-    for aluno in alunos:
-        lista = lista + "("
-        lista = lista + str(aluno.cod_aluno)
-        lista = lista + ","
-        lista = lista + "'"
-        lista = lista + aluno.nome_aluno
-        lista = lista + "'"
-        lista = lista + ")"
-        lista = lista + ","
-
-    lista = lista + "]"
-
-    
-
     form = FormularioAgendaEdicao2()
-
-        
+    form.aluno.choices = [(aluno.cod_aluno, aluno.nome_aluno) for aluno in tb_aluno.query.filter_by(cod_user=session['coduser_logado']).filter(tb_aluno.status_aluno == 0)]       
     return render_template('novoAgendaNaoProgramada.html', titulo='Nova Agenda', form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -991,7 +972,54 @@ def criarAgenda():
                         db.session.add(novoAgenda)
                         db.session.commit()                                                                                                                                        
     return redirect(url_for('agenda'))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarAgendaNaoProgramada
+#FUNÇÃO: mostrar o formulário de cadastro de agenda para casos não programados
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/criarAgendaNaoProgramada', methods=['POST','GET'])
+def criarAgendaNaoProgramada():
+    form = FormularioAgendaEdicao2()
+    #if not form.validate_on_submit():
+    #    msg = "não validado"
+    #else:
+    #    msg = "validado"
+    #return msg
+    return str(form.horario.data)
+
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarAgenda')))     
+   
     
+
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('novoAgendaNaoProgramada'))
+
+    
+    
+    data = form.horario.data
+    aluno = form.aluno.data
+
+    
+    agendas = tb_agenda.query.order_by(tb_agenda.data_agenda)\
+    .filter(tb_agenda.cod_aluno == aluno)\
+    .filter(tb_agenda.data_agenda == data)\
+    .filter(tb_agenda.cod_user == session['coduser_logado'])
+    rows = agendas.count()
+    return rows
+    if rows == 0:
+        hora = str(aluno.hrinicio_aluno)
+        hora = hora[0:5]
+        data_em_texto = str(single_date.day) +"/"+ str(single_date.month) +"/"+ str(single_date.year) + " "+ str(hora)
+        data = datetime.strptime(data_em_texto, '%d/%m/%Y %H:%M')
+        novoAgenda= tb_agenda(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, data_agenda=data, status_agenda=0)
+        db.session.add(novoAgenda)
+        db.session.commit()
+    return redirect(url_for('agenda'))                        
+
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: visualizarAgenda
 #FUNÇÃO: visualizar informações da agenda no banco de dados
