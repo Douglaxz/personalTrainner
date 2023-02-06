@@ -18,9 +18,6 @@
     <a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>   
   </div>
 </div>
-{% for field, errors in form.errors.items() %}
-{{ ', '.join(errors) }}
-{% endfor %}
 <!-- conteudo -->
 <div class="boxformulario bg-light p-2 text-dark bg-opacity-50">
   <fieldset>

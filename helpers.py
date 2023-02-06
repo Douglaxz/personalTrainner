@@ -3,7 +3,7 @@ import os
 from personal import app, db
 from models import tb_user, tb_usertype, tb_academia, tb_aluno
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeLocalField
+from wtforms import Form, StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeLocalField
 
 ##################################################################################################################################
 #PESQUISA
@@ -209,4 +209,4 @@ class FormularioAgendaEdicao1(FlaskForm):
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioAgendaEdicao2(FlaskForm):
     horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
-    aluno =SelectField('Aluno:', [validators.DataRequired()], choices=[])
+    aluno =SelectField('Aluno:', choices=[])
