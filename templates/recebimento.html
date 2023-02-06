@@ -28,7 +28,6 @@
           <tr>
               <th class="text-left col-md-2">Data</th>
               <th class="text-left col-md-4">Nome</th>
-              <th class="text-left col-md-2">Forma de pagamento</th>
               <th class="text-center col-md-2">Situação</th>
               <th class="text-center col-md-2">Ações</th>
           </tr>
@@ -42,9 +41,6 @@
               <td class="text-left">
                 {{ recebimento.nome_aluno }}
               </td>
-              <td class="text-left">
-                {{ recebimento.desc_tipopagamento }}
-              </td>              
               <td class="text-center">
                 {% if recebimento.status_recebimento == 0: %}
                 <i class="bi bi-dash-circle" style="font-size:2rem; color:red;">
