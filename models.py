@@ -42,6 +42,7 @@ class tb_aluno(db.Model):
     qui_aluno = db.Column(db.Integer, nullable=False)
     sex_aluno = db.Column(db.Integer, nullable=False)
     sab_aluno = db.Column(db.Integer, nullable=False)
+    cod_tipopagamento = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.name    
 

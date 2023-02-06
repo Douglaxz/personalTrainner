@@ -340,7 +340,7 @@ q:before, q:after {
 
 .boxformulario {
     margin: 10px auto;
-    width: 60%; /* Valor da Largura */
+    width: 70%; /* Valor da Largura */
     align-items: center;
     justify-content: center;
     border-radius: 10px;
@@ -350,7 +350,7 @@ q:before, q:after {
 
 .boxtitulo {
     margin: 10px auto;
-    width: 60%; /* Valor da Largura */
+    width: 70%; /* Valor da Largura */
     align-items: center;
     justify-content: center;
     border-radius: 10px;
@@ -365,7 +365,7 @@ q:before, q:after {
 
 .boxtitulocombusca {
     margin: 5px auto;
-    width: 60%; /* Valor da Largura */
+    width: 70%; /* Valor da Largura */
     border-radius: 10px;
     padding: 5px;
     line-height: 70px;
@@ -387,7 +387,7 @@ q:before, q:after {
 
 .boxcentral {
     margin: 10px auto;
-    width: 60%; /* Valor da Largura */
+    width: 70%; /* Valor da Largura */
     align-items: center;
     justify-content: center;
     border-radius: 10px;

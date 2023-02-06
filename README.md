@@ -40,7 +40,8 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] Funcionalidade Alunos
 - [X] Funcionalidade Academias
 - [X] Funcionalidade Agendamentos
-- [ ] Funcionalidade Agendamentos
+- [X] Funcionalidade Tipos de pagamento
+- [ ] Funcionalidade Controle de pagamento
 - [ ] Controle de pagamento dos alunos
 
 

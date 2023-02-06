@@ -1,7 +1,7 @@
 #importações
 import os
 from personal import app, db
-from models import tb_user, tb_usertype, tb_academia, tb_aluno
+from models import tb_user, tb_usertype, tb_academia, tb_aluno, tb_tipopagamento
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeLocalField
 
@@ -139,6 +139,7 @@ class FormularioAlunoEdicao(FlaskForm):
     diasex = BooleanField('Sexta:')
     diasab = BooleanField('Sábado:')
     salvar = SubmitField('Salvar')
+    tipopagamento = SelectField('Forma pagamento:', coerce=int,  choices=[(g.cod_tipopagamento, g.desc_tipopagamento) for g in tb_tipopagamento.query.order_by('desc_tipopagamento')])
 
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -165,6 +166,7 @@ class FormularioAlunoVisualizar(FlaskForm):
     diasex = BooleanField('Sexta:', render_kw={'readonly': True})
     diasab = BooleanField('Sábado:', render_kw={'readonly': True})    
     salvar = SubmitField('Editar', render_kw={'readonly': True})
+    tipopagamento = SelectField('Forma pagamento:', coerce=int,  choices=[(g.cod_tipopagamento, g.desc_tipopagamento) for g in tb_tipopagamento.query.order_by('desc_tipopagamento')],render_kw={'readonly': True})
 
 ##################################################################################################################################
 #AGENDA

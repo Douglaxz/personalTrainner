@@ -8,7 +8,8 @@ from models import tb_user,\
     tb_usertype,\
     tb_academia,\
     tb_aluno,\
-    tb_agenda
+    tb_agenda,\
+    tb_tipopagamento
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -23,7 +24,9 @@ from helpers import \
     FormularioAgendaEdicao,\
     FormularioAgendaVisualizar,\
     FormularioAgendaEdicao1,\
-    FormularioAgendaEdicao2
+    FormularioAgendaEdicao2,\
+    FormularioTipoPagamentoEdicao,\
+    FormularioTipoPagamentoVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -626,6 +629,7 @@ def criarAluno():
     aluno = tb_aluno.query.filter_by(nome_aluno=nome).first()
     horarioinicio = form.horarioinicio.data
     horariofinal = form.horariofinal.data
+    tipopagamento = form.tipopagamento.data
     dom = form.diadom.data
     seg = form.diaseg.data
     ter = form.diater.data
@@ -636,7 +640,7 @@ def criarAluno():
     if aluno:
         flash ('Aluno já existe','danger')
         return redirect(url_for('aluno')) 
-    novoAluno = tb_aluno(nome_aluno=nome,end_aluno=endereco,status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone,diavenc_aluno=diavencimento,hrinicio_aluno=horarioinicio,hrfinal_aluno=horariofinal,dom_aluno = dom,seg_aluno = seg,ter_aluno = ter,qua_aluno = qua,qui_aluno = qui,sex_aluno = sex,sab_aluno = sab)
+    novoAluno = tb_aluno(nome_aluno=nome,end_aluno=endereco,status_aluno=status,datanasc_aluno=datanascimento,cod_user=usuario,cod_academia=academia,obs_aluno=observacoes,telefone_aluno=telefone,diavenc_aluno=diavencimento,hrinicio_aluno=horarioinicio,hrfinal_aluno=horariofinal,dom_aluno = dom,seg_aluno = seg,ter_aluno = ter,qua_aluno = qua,qui_aluno = qui,sex_aluno = sex,sab_aluno = sab, cod_tipopagamento=tipopagamento)
     flash('Aluno criado com sucesso!','success')
     db.session.add(novoAluno)
     db.session.commit()
@@ -671,6 +675,7 @@ def visualizarAluno(id):
     form.diaqui.data = aluno.qui_aluno
     form.diasex.data = aluno.sex_aluno
     form.diasab.data = aluno.sab_aluno
+    form.tipopagamento.data = aluno.cod_tipopagamento
     return render_template('visualizarAluno.html', titulo='Visualizar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -701,7 +706,8 @@ def editarAluno(id):
     form.diaqua.data = aluno.qua_aluno
     form.diaqui.data = aluno.qui_aluno
     form.diasex.data = aluno.sex_aluno
-    form.diasab.data = aluno.sab_aluno    
+    form.diasab.data = aluno.sab_aluno
+    form.tipopagamento.data = aluno.cod_tipopagamento
     return render_template('editarAluno.html', titulo='Editar Aluno', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -735,7 +741,7 @@ def atualizarAluno():
         aluno.qui_aluno = form.diaqui.data
         aluno.sex_aluno = form.diasex.data
         aluno.sab_aluno = form.diasab.data
-
+        aluno.cod_tipopagamento = form.tipopagamento.data
         db.session.add(aluno)
         db.session.commit()
         flash('Aluno atualizado com sucesso!','success')
@@ -1071,3 +1077,126 @@ def atualizarAgenda():
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarAgenda', id=request.form['id']))
+
+##################################################################################################################################
+#TIPO DE PAGAMENTOS
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: tipopagamento
+#FUNÇÃO: tela do sistema para mostrar os tipos de pagamentos cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/tipopagamento', methods=['POST','GET'])
+def tipopagamento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('tipopagamento')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    
+    if pesquisa == "" or pesquisa == None:     
+        tipospagamento = tb_tipopagamento.query.order_by(tb_tipopagamento.desc_tipopagamento)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        tipospagamento = tb_tipopagamento.query.order_by(tb_tipopagamento.desc_tipopagamento)\
+        .filter(tb_tipopagamento.desc_tipopagamento.ilike(f'%{pesquisa}%'))\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
+    return render_template('tipopagamento.html', titulo='Tipo Pagamento', tipospagamento=tipospagamento, form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoTipoPagamento
+#FUNÇÃO: mostrar o formulário de cadastro de tipo de pagamento
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoTipoPagamento')
+def novoTipoPagamento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoTipoPagamento'))) 
+    form = FormularioTipoPagamentoEdicao()
+    return render_template('novoTipoPagamento.html', titulo='Novo Tipo Pagamento', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarTipoPagamento
+#FUNÇÃO: inserir informações do tipo de pagamento no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarTipoPagamento', methods=['POST',])
+def criarTipoPagamento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarTipoPaamento')))     
+    form = FormularioTipoPagamentoEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarTipoPagamento'))
+    desc  = form.descricao.data
+    status = form.status.data
+    tipopagamento = tb_tipopagamento.query.filter_by(desc_tipopagamento=desc).first()
+    if tipopagamento:
+        flash ('Tipo Pagamento já existe','danger')
+        return redirect(url_for('tipopagamento')) 
+    novoTipoPagamento = tb_tipopagamento(desc_tipopagamento=desc, status_tipopagamento=status)
+    flash('Tipo de pagamento criado com sucesso!','success')
+    db.session.add(novoTipoPagamento)
+    db.session.commit()
+    return redirect(url_for('tipopagamento'))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarTipoPagamento
+#FUNÇÃO: mostrar formulário de visualização dos tipos de pagamento cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarTipoPagamento/<int:id>')
+def visualizarTipoPagamento(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarTipoPagamento')))  
+    tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=id).first()
+    form = FormularioTipoPagamentoVisualizar()
+    form.descricao.data = tipopagamento.desc_tipopagamento
+    form.status.data = tipopagamento.status_tipopagamento
+    return render_template('visualizarTipoPagamento.html', titulo='Visualizar Tipo Pagamento', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarTipoUsuario
+##FUNÇÃO: mostrar formulário de edição dos tipos de usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/editarTipoPagamento/<int:id>')
+def editarTipoPagamento(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarTipoPagamento')))  
+    tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=id).first()
+    form = FormularioTipoPagamentoEdicao()
+    form.descricao.data = tipopagamento.desc_tipopagamento
+    form.status.data = tipopagamento.status_tipopagamento
+    return render_template('editarTipoPagamento.html', titulo='Editar Tipo Pagamento', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarTipoPagamento
+#FUNÇÃO: alterar as informações dos tipos de usuários no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarTipoPagamento', methods=['POST',])
+def atualizarTipoPagamento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarTipoPagamento')))      
+    form = FormularioTipoPagamentoEdicao(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=request.form['id']).first()
+        tipopagamento.desc_tipopagamento = form.descricao.data
+        tipopagamento.status_tipopagamento = form.status.data
+        db.session.add(tipopagamento)
+        db.session.commit()
+        flash('Tipo de pagamento atualizado com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarTipoPagamento', id=request.form['id']))    
