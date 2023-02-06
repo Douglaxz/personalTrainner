@@ -7,6 +7,7 @@
   <div class="col-md-4 offset-md-4" style="text-align: right;">
     <a class="btn btn-primary" href="{{url_for('editarRecebimento',id=id)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
     <a class="btn btn-danger" href="{{url_for('recebimento')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>  
+    <a class="btn btn-warning" href="{{url_for('deletarRecebimento',id=id)}}" onclick="return confirm('Você tem certeza que deseja apagar esse recebimento?')"><i class="bi bi-dash-circle" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <!-- Padrão para mobile -->
@@ -14,7 +15,8 @@
   <div class="col-md-4"><i class="bi bi bi-calendar3" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
   <div class="col-md-4 offset-md-4" style="text-align: center;">
     <a class="btn btn-primary" href="{{url_for('editarRecebimento',id=id)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
-    <a class="btn btn-danger" href="{{url_for('recebimento')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>   
+    <a class="btn btn-danger" href="{{url_for('recebimento')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn-warning" href="{{url_for('deletarRecebimento',id=id)}}" onclick="return confirm('Você tem certeza que deseja apagar esse recebimento?')"><i class="bi bi-dash-circle" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <!-- conteudo -->

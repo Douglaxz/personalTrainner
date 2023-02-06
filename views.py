@@ -1082,6 +1082,22 @@ def atualizarAgenda():
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarAgenda', id=request.form['id']))
 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: detelarAgenda
+#FUNÇÃO: apagar agenda no banco de dados
+#PODE ACESSAR: personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/deletarAgenda/<int:id>')
+def deletarAgenda(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarAluno')))   
+    tb_agenda.query.filter_by(cod_agenda=id).delete()
+    db.session.commit()
+    flash('Agenda apagada com sucesso!','success')
+    return redirect(url_for('agenda'))  
+
 ##################################################################################################################################
 #TIPO DE PAGAMENTOS
 ##################################################################################################################################
@@ -1284,7 +1300,6 @@ def criarRecebimento():
         end_date = (datafim)+ timedelta(days=1)
         for single_date in daterange(start_date, end_date):
             if int(aluno.diavenc_aluno) == (single_date.day):
-                msg = msg + str(single_date.day) + "****"
                 recebimento = tb_recebimento.query.order_by(tb_recebimento.dataprev_recebimento)\
                 .filter(tb_recebimento.cod_aluno == aluno.cod_aluno)\
                 .filter(tb_recebimento.dataprev_recebimento == single_date)\
@@ -1357,3 +1372,18 @@ def atualizarRecebimento():
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarRecebimento', id=request.form['id'])) 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: deletarRecebimento
+#FUNÇÃO: apagar recebimento no banco de dados
+#PODE ACESSAR: personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/deletarRecebimento/<int:id>')
+def deletarRecebimento(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarAluno')))   
+    tb_recebimento.query.filter_by(cod_recebimento=id).delete()
+    db.session.commit()
+    flash('Recebimento apagado com sucesso!','success')
+    return redirect(url_for('recebimento')) 

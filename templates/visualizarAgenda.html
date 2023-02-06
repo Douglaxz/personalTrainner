@@ -7,6 +7,7 @@
   <div class="col-md-4 offset-md-4" style="text-align: right;">
     <a class="btn btn-primary" href="{{url_for('editarAgenda',id=id)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
     <a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>  
+    <a class="btn btn-warning" href="{{url_for('deletarAgenda',id=id)}}" onclick="return confirm('Você tem certeza que deseja apagar agenda?')"><i class="bi bi-calendar-x" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <!-- Padrão para mobile -->
@@ -14,21 +15,23 @@
   <div class="col-md-4"><i class="bi bi bi-calendar3" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
   <div class="col-md-4 offset-md-4" style="text-align: center;">
     <a class="btn btn-primary" href="{{url_for('editarAgenda',id=id)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
-    <a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>   
+    <a class="btn btn-danger" href="{{url_for('agenda')}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn-warning" href="{{url_for('deletarAgenda',id=id)}}" onclick="return confirm('Você tem certeza que deseja apagar agenda?')"><i class="bi bi-calendar-x" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <!-- conteudo -->
 <div class="boxformulario bg-light p-2 text-dark bg-opacity-50">
+  <input type="hidden" name="id" id="id" value="{{id}}">
   <fieldset>
     {{ form.csrf_token() }}
-  <div class="form-group">{{ form.data.label(class = 'form-label') }}
-    {{ form.data(class = 'form-control') }}
+  <div class="form-group">{{ form.horario.label(class = 'form-label') }}
+    {{ form.horario(class = 'form-control') }}
   </div>
-  <div class="form-group">{{ form.aluno.label(class = 'form-label') }}
-    {{ form.aluno(class = 'form-control') }}
+  <div class="form-group">{{ form.nome.label(class = 'form-label') }}
+    {{ form.nome(class = 'form-control') }}
   </div>
-    <div class="form-group">{{ form.formadepagamento.label(class = 'form-label') }}
-    {{ form.formadepagamento(class = 'form-control') }}
+    <div class="form-group">{{ form.academia.label(class = 'form-label') }}
+    {{ form.academia(class = 'form-control') }}
   </div>
   <div class="form-group">{{ form.status.label(class = 'form-label') }}
     {{ form.status(class = 'form-control') }}
