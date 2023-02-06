@@ -26,7 +26,7 @@ class FormularPesquisa(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: usuários
 #TIPO: edição
-#TABELA: user
+#TABELA: tb_user
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioUsuario(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o nome do usuário"})
@@ -40,7 +40,7 @@ class FormularioUsuario(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: usuários
 #TIPO: visualização
-#TABELA: user
+#TABELA: tb_user
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioUsuarioVisualizar(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
@@ -53,7 +53,7 @@ class FormularioUsuarioVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: trocar senha do usuário
 #TIPO: edição
-#TABELA: user
+#TABELA: tb_user
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioUsuarioTrocarSenha(FlaskForm):
     senhaatual = PasswordField('Senha Atual:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a senha atual"})
@@ -68,7 +68,7 @@ class FormularioUsuarioTrocarSenha(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: tipo de usuário
 #TIPO: edição
-#TABELA: usertype
+#TABELA: tb_usertype
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioTipoUsuarioEdicao(FlaskForm):
     descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de usuário"})
@@ -78,7 +78,7 @@ class FormularioTipoUsuarioEdicao(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: tipo de usuário
 #TIPO: visualização
-#TABELA: usertype
+#TABELA: tb_usertype
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioTipoUsuarioVisualizar(FlaskForm):
     descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
@@ -92,7 +92,7 @@ class FormularioTipoUsuarioVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: academia
 #TIPO: edição
-#TABELA: academia
+#TABELA: tb_academia
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAcademiaEdicao(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite o nome da academia"})
@@ -103,7 +103,7 @@ class FormularioAcademiaEdicao(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: academia
 #TIPO: visualização
-#TABELA: academia
+#TABELA: tb_academia
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAcademiaVisualizar(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
@@ -118,7 +118,7 @@ class FormularioAcademiaVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: aluno
 #TIPO: edição
-#TABELA: alunos
+#TABELA: tb_aluno
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAlunoEdicao(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={"placeholder": "digite o nome do aluno"})
@@ -144,7 +144,7 @@ class FormularioAlunoEdicao(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: aluno
 #TIPO: visualização
-#TABELA: alunos
+#TABELA: tb_alunos
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAlunoVisualizar(FlaskForm):
     nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
@@ -172,7 +172,7 @@ class FormularioAlunoVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: agenda criação
 #TIPO: edição
-#TABELA: agenda
+#TABELA: tb_agenda
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioAgendaEdicao(FlaskForm):
     datainicio = DateField('Data Inicio:', [validators.DataRequired()],render_kw={"placeholder": "digite a data de inicio do agendamento"})
@@ -182,7 +182,7 @@ class FormularioAgendaEdicao(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: visualizar agenda
 #TIPO: visualização
-#TABELA: agenda
+#TABELA: tb_agenda
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioAgendaVisualizar(FlaskForm):
     horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
@@ -193,7 +193,7 @@ class FormularioAgendaVisualizar(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: editar agenda
 #TIPO: edição
-#TABELA: agenda
+#TABELA: tb_agenda
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioAgendaEdicao1(FlaskForm):
     horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
@@ -205,8 +205,32 @@ class FormularioAgendaEdicao1(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 #FORMUÁRIO: editar agenda não programada
 #TIPO: edição
-#TABELA: agenda
+#TABELA: tb_agenda
 #--------------------------------------------------------------------------------------------------------------------------------- 
 class FormularioAgendaEdicao2(FlaskForm):
     horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
     aluno =SelectField('Aluno:', choices=[])
+
+##################################################################################################################################
+#TIPO DE PAGAMENTO
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: tipo de pagamento
+#TIPO: edição
+#TABELA: tb_pagamento
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioTipoPagamentoEdicao(FlaskForm):
+    descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de usuário"})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    salvar = SubmitField('Salvar')    
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: tipo de pagamento
+#TIPO: visualização
+#TABELA: tb_pagamento
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioTipoPagamentoVisualizar(FlaskForm):
+    descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')    

@@ -39,8 +39,9 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] Funcionalidade tipo de usuário
 - [X] Funcionalidade Alunos
 - [X] Funcionalidade Academias
+- [X] Funcionalidade Agendamentos
 - [ ] Funcionalidade Agendamentos
-- [ ] Agendamento de aulas
+- [ ] Controle de pagamento dos alunos
 
 
 ## :paperclips: Colaborando:
