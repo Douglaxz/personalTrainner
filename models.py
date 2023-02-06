@@ -46,7 +46,6 @@ class tb_aluno(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name    
 
-
 class tb_academia(db.Model):
     cod_academia = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome_academia = db.Column(db.String(50), nullable=False)
@@ -71,3 +70,12 @@ class tb_tipopagamento(db.Model):
     status_tipopagamento = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.name  
+
+class tb_recebimento(db.Model):
+    cod_recebimento = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cod_user = db.Column(db.Integer, nullable=False)
+    dataprev_recebimento = db.Column(db.DateTime, nullable=False)
+    status_recebimento = db.Column(db.Integer, nullable=False)
+    cod_aluno = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name 

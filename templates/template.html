@@ -22,17 +22,18 @@
 <header>
     <div class="collapse" id="navbarToggleExternalContent">
       <div class="bg-dark p-4">
-        <button type="button" class="btn btn-outline-light btn-lg bi bi-house" onclick="window.location.href = '/'"> Home</button>
+        <button type="button" class="btn btn-outline-light bi bi-house" onclick="window.location.href = '/'"> Home</button>
         {% if(session['tipousuario_logado'] == 1)%}
-          <button type="button" class="btn btn-outline-light btn-lg bi bi-person" onclick="window.location.href = '/usuario'"> Usuários</button>
-          <button type="button" class="btn btn-outline-light btn-lg bi bi-people" onclick="window.location.href = '/tipousuario'"> Tipos Usuário</button>
-          <button type="button" class="btn btn-outline-light btn-lg bi bi-bank" onclick="window.location.href = '/academia'"> Academias</button>
-          <button type="button" class="btn btn-outline-light btn-lg bi bi-credit-card" onclick="window.location.href = '/tipopagamento'"> Tipo Pagamento</button>
+          <button type="button" class="btn btn-outline-light bi bi-person" onclick="window.location.href = '/usuario'"> Usuários</button>
+          <button type="button" class="btn btn-outline-light bi bi-people" onclick="window.location.href = '/tipousuario'"> Tipos Usuário</button>
+          <button type="button" class="btn btn-outline-light bi bi-bank" onclick="window.location.href = '/academia'"> Academias</button>
+          <button type="button" class="btn btn-outline-light bi bi-credit-card" onclick="window.location.href = '/tipopagamento'"> Tipo Pagamento</button>
         {% endif%}
-        <button type="button" class="btn btn-outline-light btn-lg bi bi-universal-access" onclick="window.location.href = '/aluno'"> Alunos</button>
-        <button type="button" class="btn btn-outline-light btn-lg bi bi bi-calendar3" onclick="window.location.href = '/agenda'"> Agenda</button>
-        <button type="button" class="btn btn-outline-light btn-lg bi bi-key" onclick="window.location.href = '/editarSenhaUsuario'"> Trocar Senha</button>
-        <button type="button" class="btn btn-outline-light btn-lg bi bi-box-arrow-right" onclick="window.location.href = '/logout'"> Logout</button>
+        <button type="button" class="btn btn-outline-light bi bi-universal-access" onclick="window.location.href = '/aluno'"> Alunos</button>
+        <button type="button" class="btn btn-outline-light bi bi bi-calendar3" onclick="window.location.href = '/agenda'"> Agenda</button>
+        <button type="button" class="btn btn-outline-light bi bi-currency-dollar" onclick="window.location.href = '/recebimento'"> Recebimento</button>
+        <button type="button" class="btn btn-outline-light bi bi-key" onclick="window.location.href = '/editarSenhaUsuario'"> Trocar Senha</button>
+        <button type="button" class="btn btn-outline-light bi bi-box-arrow-right" onclick="window.location.href = '/logout'"> Logout</button>
       </div>
     </div>
     <nav class="navbar navbar-dark bg-dark">

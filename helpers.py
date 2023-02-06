@@ -236,3 +236,48 @@ class FormularioTipoPagamentoVisualizar(FlaskForm):
     descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')    
+
+##################################################################################################################################
+#RECEBIMENTO
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: recebimento criação
+#TIPO: edição
+#TABELA: tb_recebimento
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioRecebimentoEdicao(FlaskForm):
+    datainicio = DateField('Data Inicio:', [validators.DataRequired()],render_kw={"placeholder": "digite a data de inicio do recebimento"})
+    datafim = DateField('Data Fim:', [validators.DataRequired()],render_kw={"placeholder": "digite a data final do recebimento"})
+    salvar = SubmitField('Salvar')   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: visualizar recebimento
+#TIPO: visualização
+#TABELA: tb_recebimento
+#--------------------------------------------------------------------------------------------------------------------------------- 
+class FormularioRecebimentoVisualizar(FlaskForm):
+    horario = StringField('Horário:', [validators.DataRequired(), validators.Length(min=1, max=50)],render_kw={'readonly': True})
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    formapagamento = StringField('Forma de pagamento:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Não realizado"),(1,"Realizado")], render_kw={'readonly': True})
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: editar recebimento
+#TIPO: edição
+#TABELA: tb_recebimento
+#--------------------------------------------------------------------------------------------------------------------------------- 
+class FormularioRecebimentoEdicao1(FlaskForm):
+    horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    formapagamento = StringField('Forma de pagamento:', [validators.DataRequired(), validators.Length(min=1, max=100)],render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0,"Agendada"),(1,"Realizada"),(2,"Cancelada - Faltou"),(3,"Cancelada - Reposição")])
+
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: editar pagamento não programado
+#TIPO: edição
+#TABELA: tb_recebimento
+#--------------------------------------------------------------------------------------------------------------------------------- 
+class FormularioPagamentoEdicao2(FlaskForm):
+    horario = DateTimeLocalField('Horário:', [validators.DataRequired()], format='%Y-%m-%dT%H:%M')
+    aluno =SelectField('Aluno:', choices=[])

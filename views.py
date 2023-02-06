@@ -9,7 +9,8 @@ from models import tb_user,\
     tb_academia,\
     tb_aluno,\
     tb_agenda,\
-    tb_tipopagamento
+    tb_tipopagamento,\
+    tb_recebimento
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -26,7 +27,9 @@ from helpers import \
     FormularioAgendaEdicao1,\
     FormularioAgendaEdicao2,\
     FormularioTipoPagamentoEdicao,\
-    FormularioTipoPagamentoVisualizar
+    FormularioTipoPagamentoVisualizar,\
+    FormularioRecebimentoEdicao,\
+    FormularioRecebimentoVisualizar
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
 from flask_bcrypt import generate_password_hash, Bcrypt, check_password_hash
@@ -1200,3 +1203,114 @@ def atualizarTipoPagamento():
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarTipoPagamento', id=request.form['id']))    
+
+##################################################################################################################################
+#RECEBIMENTO
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: recebimento
+#FUNÇÃO: tela do sistema para mostrar o recebimento das mensalidades dos alunos
+#PODE ACESSAR: somente o personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/recebimento', methods=['POST','GET'])
+def recebimento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('aluno')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    if pesquisa == "" or pesquisa == None:     
+        recebimentos = tb_recebimento.query.order_by(tb_recebimento.dataprev_recebimento)\
+        .join(tb_aluno, tb_aluno.cod_aluno==tb_recebimento.cod_aluno)\
+        .join(tb_tipopagamento, tb_aluno.cod_tipopagamento==tb_tipopagamento.cod_tipopagamento)\
+        .add_columns(tb_aluno.nome_aluno, tb_recebimento.dataprev_recebimento, tb_tipopagamento.desc_tipopagamento, tb_recebimento.cod_recebimento, tb_recebimento.status_recebimento)\
+        .filter(tb_recebimento.cod_user == session['coduser_logado'])\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        recebimentos = tb_recebimento.query.order_by(tb_recebimento.dataprev_recebimento)\
+        .join(tb_aluno, tb_aluno.cod_aluno==tb_recebimento.cod_aluno)\
+        .join(tb_tipopagamento, tb_aluno.cod_tipopagamento==tb_tipopagamento.cod_tipopagamento)\
+        .add_columns(tb_aluno.nome_aluno, tb_recebimento.dataprev_recebimento, tb_tipopagamento.desc_tipopagamento, tb_recebimento.cod_recebimento, tb_recebimento.status_recebimento)\
+        .filter(tb_recebimento.cod_user == session['coduser_logado'])\
+        .filter(tb_aluno.nome_aluno.ilike(f'%{pesquisa}%'))\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)   
+    usuario = int(session['coduser_logado'])     
+    return render_template('recebimento.html', titulo='Recebimento', recebimentos=recebimentos, form=form,usuario=usuario)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoRecebimento
+#FUNÇÃO: mostrar o formulário de cadastro de recebimento
+#PODE ACESSAR: usuários do tipo administrador e personal
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoRecebimento')
+def novoRecebimento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoAgenda'))) 
+    form = FormularioRecebimentoEdicao()
+    return render_template('novoRecebimento.html', titulo='Nova Recebimento', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarRecebimento
+#FUNÇÃO: inserir informações de programação de recebimento no banco de dados
+#PODE ACESSAR: área do sistema
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarRecebimento', methods=['POST',])
+def criarRecebimento():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarAgenda')))     
+    form = FormularioAgendaEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('novoAgenda'))
+    datainicio = form.datainicio.data
+    datafim = form.datafim.data
+    if datainicio > datafim:
+        flash('A data de inicio é maior que a data de fim ','danger')
+        return redirect(url_for('novoAgenda')) 
+    temAluno = tb_aluno.query.order_by(tb_aluno.nome_aluno)\
+    .filter(tb_aluno.cod_user == session['coduser_logado'])\
+    .filter(tb_aluno.status_aluno == 0)
+    for aluno in temAluno:
+        def daterange(start_date, end_date):
+            for n in range(int((end_date - start_date).days)):
+                yield start_date + timedelta(n)
+        start_date = (datainicio)
+        end_date = (datafim)+ timedelta(days=1)
+        for single_date in daterange(start_date, end_date):
+            if int(aluno.diavenc_aluno) == (single_date.day):
+                msg = msg + str(single_date.day) + "****"
+                recebimento = tb_recebimento.query.order_by(tb_recebimento.dataprev_recebimento)\
+                .filter(tb_recebimento.cod_aluno == aluno.cod_aluno)\
+                .filter(tb_recebimento.dataprev_recebimento == single_date)\
+                .filter(tb_recebimento.cod_user == session['coduser_logado'])
+                rows = recebimento.count()  
+                if rows == 0:
+                    novoRecebimento= tb_recebimento(cod_user=session['coduser_logado'], cod_aluno=aluno.cod_aluno, dataprev_recebimento=single_date, status_recebimento=0)
+                    db.session.add(novoRecebimento)
+                    db.session.commit()                                                                                       
+    return redirect(url_for('recebimento'))    
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarRecebimento
+#FUNÇÃO: visualizar informações de recebimento de mensalidades no banco de dados
+#PODE ACESSAR: personal
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarRecebimento/<int:id>')
+def visualizarRecebimento(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarAgenda')))  
+    recebimento = tb_recebimento.query.filter_by(cod_recebimento=id).first()
+    aluno = tb_aluno.query.filter_by(cod_aluno=recebimento.cod_aluno).first()
+    tipopagamento = tb_tipopagamento.query.filter_by(cod_tipopagamento=aluno.cod_tipopagamento).first() 
+    form = FormularioRecebimentoVisualizar()
+    form.nome.data = aluno.nome_aluno
+    form.tipopagamento.data = tipopagamento.desc_tipopagamento
+    form.status.data = recebimento.status_agenda
+    form.horario.data = recebimento.dataprev_recebimento.strftime('%d/%m/%Y')
+    return render_template('visualizarRecebimento.html', titulo='Visualizar Recebimento', id=id, form=form) 
